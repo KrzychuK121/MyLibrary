@@ -1,0 +1,52 @@
+﻿@model IEnumerable<MojaBiblioteka.Models.Entities.Persons.Author>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name.Fistname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Surname.Surname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateOfBirth)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td class="text-capitalize">
+                @Html.DisplayFor(modelItem => item.Name.Fistname)
+            </td>
+            <td class="text-capitalize">
+                @Html.DisplayFor(modelItem => item.Surname.Surname)
+            </td>
+            <td>
+                @if(item.DateOfBirth is null)
+                {
+                    @:Brak
+                }else{
+                    @Html.DisplayFor(modelItem => item.DateOfBirth)
+                }
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.AuthorId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.AuthorId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.AuthorId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

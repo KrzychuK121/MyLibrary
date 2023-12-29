@@ -1,0 +1,85 @@
+﻿@{
+    ViewData["Title"] = "Strona główna";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Witaj w Twojej internetowej Bibliotece</h1>
+    <div class="row my-4">
+        <div class="row justify-content-around my-4">
+            <div class="col-7">
+                <h2 class="mb-3">Wyszukaj książkę i sprawdź jej dostępność</h2>
+                <p>
+                    Jeżeli interesujesz się danym egzemplarzem z naszej kolekcji, a nie jesteś pewien, czy jest on aktualnie dostępny, 
+                    zachęcamy do sprawdzenia jego stanu na naszej stronie internetowej i wypożyczeniu go. Książkę możesz odebrać w 
+                    przeciągu 3 dni roboczych. Dzięki temu unikniesz sytuacji, w której przychodzisz do biblioteki i odchodzisz z pustymi 
+                    rękami.
+                </p>
+            </div>
+            <img src="~/img/Home/young-student-looking-book-library-2.jpg" class="img-fluid col-4" />
+        </div>
+        <div class="row justify-content-around my-4">
+            <img src="~/img/Home/hire-book-online.jpg" class="img-fluid col-4" />
+            <div class="col-7">
+                <h2 class="mb-3">Wypożycz bez wychodzenia z domu</h2>
+                <p>
+                    Jeśli interesujesz się jakimś egzemplarzem z naszego zbioru a nie wiesz czy aktualnie jest on dostępny to możesz
+                    najpierw sprawdzić na stronie jego dostępność a następnie wypożyczyć, rezerwując go dla siebie. W ten sposób 
+                    unikniesz sytuacji w której przychodzisz do biblioteki i wracasz z niczym.
+                </p>
+            </div>
+        </div>
+        <div class="row justify-content-around my-4">
+            <div class="col-7">
+                <h2 class="mb-3">Sprawdź termin oddania</h2>
+                <p>
+                    Nie pamiętasz od kiedy wypożyczasz książkę? A może po prostu chcesz się upewnić czy dobrze pamiętasz?
+                    To nie problem. W każdej chwili możesz sprawdzić listę wypożyczonych pozycji i w mgnieniu oka podejrzeć
+                    do kiedy musisz je zwrócić.
+                </p>
+            </div>
+            <img src="~/img/Home/check-return-date.JPG" class="img-fluid col-4" />
+        </div>
+        <div class="row justify-content-around my-4">
+            <img src="~/img/Home/reading-book.jpg" class="img-fluid col-4" />
+            <div class="col-7">
+                <h2 class="mb-3">Przedłuż termin oddania</h2>
+                <p>
+                    Zbliża się termin oddania a książka jeszcze nie przeczytana? Przedłuż termin za pomocą kilku kliknięć i ciesz się książką 
+                    bez presji.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center my-3">
+        <h2>Lista polecanych aktualnie książek</h2>
+    </div>
+    <div class="row justify-content-center my-3">
+        <div id="carouselExampleIndicators" class="carousel col-6 carousel-dark slide" data-bs-ride="carousel">
+            <div class="carousel-inner px-3">
+                @for(int i = 0; i < 3; i++)
+                {
+                    string activeOrVoid = i == 0 ? " active" : "";
+
+                    <div class="carousel-item @activeOrVoid">
+                        <div class="d-block w-100">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Card title</h5>
+                                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</div>

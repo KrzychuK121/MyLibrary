@@ -1,0 +1,102 @@
+﻿@using MojaBiblioteka.Models.Entities.Book;
+@model IEnumerable<Book>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Isbn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BookAuthor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Publisher)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BookCategory)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReleaseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Isbn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+                <td class="text-capitalize">
+                    @if(item.BookAuthor is null || item.BookAuthor.Count() == 0)
+                    {
+                        @:Brak
+                    }
+
+                    @foreach(var bAuthor in item.BookAuthor)
+                    {
+
+                            string? dateToDisplay = bAuthor.Author.DateOfBirth is null ?
+                                "" :
+                                ", " +  bAuthor.Author.DateOfBirth.ToString().Split(' ')[0];
+
+                        @Html.Encode(
+                            bAuthor.Author.Name.Fistname + " " + 
+                            bAuthor.Author.Surname.Surname +
+                            dateToDisplay
+                        );
+                        <br />
+                    }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Publisher.Name)
+            </td>
+            <td>
+                @{
+                    // which element in loop
+                    var counter = 1;
+
+                    if (item.BookCategory is null || item.BookCategory.Count() == 0)
+                        @Html.Raw("Brak");
+
+                    foreach (var bCategory in item.BookCategory)
+                    {
+                        @bCategory.Category.Name @(counter == item.BookCategory.Count() ? "" : ", ");
+                        counter++;
+                    }
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReleaseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Isbn">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Isbn">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Isbn">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

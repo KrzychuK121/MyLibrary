@@ -1,0 +1,113 @@
+﻿@using MojaBiblioteka.Models.ViewModels.Book;
+@model MojaBiblioteka.Models.Entities.Book.Book
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Book</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <!--asp-validation-summary="ModelOnly" -->
+            <div class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Isbn" class="control-label"></label>
+                <input asp-for="Isbn" class="form-control" />
+                <span asp-validation-for="Isbn" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReleaseDate" class="control-label"></label>
+                <input asp-for="ReleaseDate" class="form-control" />
+                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Publisher" class="control-label"></label>
+                <select asp-for="PublisherId" class ="form-control" asp-items="ViewBag.PublishersId">
+                    <option value="">--Wybierz wydawcę--</option>
+                </select>
+                <span asp-validation-for="PublisherId" class="text-danger"></span>
+                <span class="text-info">
+                    Brak wydawcy? Dodaj go <a asp-controller="Publishers" asp-action="Create">tutaj</a>.
+                </span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Autorzy</label>
+                <select name="AuthorsId" class ="form-control" asp-items="ViewBag.AuthorsSelect" multiple>
+                    <option value="">--Wybierz autorów--</option>
+                </select>
+                <span asp-validation-for="BookAuthor" class="text-danger"></span>
+                <span class="text-info">
+                    Brak autora? Dodaj go <a asp-controller="Authors" asp-action="Create">tutaj</a>.
+                </span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Kategorie</label>
+                <span class="text-info">
+                    Brak kategorii? Dodaj ją <a asp-controller="Categories" asp-action="Create">tutaj</a>.
+                </span>
+                <div class="row">
+                    @{
+
+                        char? firstChar = null;
+                        List<CategoryChecked> sortedCategories = ViewBag.Categories;
+                        sortedCategories.Sort((first, secound) => first.Category.Name.CompareTo(secound.Category.Name));
+
+                        foreach (var category in sortedCategories)
+                        {
+                            if (firstChar == null || firstChar != category.Category.Name[0])
+                            {
+                                if(firstChar != null)
+                                {
+                                    @:</div>
+                                }
+                            @:<div class="row">
+                            firstChar = category.Category.Name[0];
+                            @:<h2>@firstChar</h2>
+                            @:<hr>
+                        }
+                        @:<div class="col-lg-6 col-xl-4">
+                            <input type="checkbox"
+                                name = "selectedCategories"
+                                value = "@category.Category.CategoryId"
+                                @(Html.Raw(category.Checked ? "checked=\"checked\"" : "")) />
+                        
+                        @category.Category.Name
+                        
+                        @:</div>
+                    }
+                    if(ViewBag.Categories.Count != 0)
+                    {
+                        @:</div>
+                    }
+                    
+                }  
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
