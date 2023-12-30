@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MojaBiblioteka.Models.Entities.Book;
 using MojaBiblioteka.Models.Entities.Persons;
 
 namespace MojaBiblioteka.Data
 {
-    public class MyLibraryContext : DbContext
+    public class MyLibraryContext : IdentityDbContext
     {
         public MyLibraryContext (DbContextOptions<MyLibraryContext> options)
             : base(options)
@@ -26,6 +27,7 @@ namespace MojaBiblioteka.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<BookCategory>()
                 .HasKey(c => new { c.BookIsbn, c.CategoryId });
             modelBuilder.Entity<BookAuthor>()
