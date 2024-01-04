@@ -16,14 +16,14 @@ namespace MojaBiblioteka.Data
         {
         }
 
-        public DbSet<Book> Book { get; set; } = default!;
+        public DbSet<Book> Books { get; set; } = default!;
         public DbSet<Publisher> Publishers { get; set; } = default!;
         public DbSet<Category> Categories { get; set; } = default!;
-        public DbSet<Author> Author { get; set; } = default!;
-        public DbSet<BookCategory> BookCategory { get; set; } = default!;
-        public DbSet<BookAuthor> BookAuthor { get; set; } = default!;
+        public DbSet<Author> Authors { get; set; } = default!;
+        public DbSet<BookCategory> BooksCategories { get; set; } = default!;
+        public DbSet<BookAuthor> BooksAuthors { get; set; } = default!;
         public DbSet<Name> Names { get; set; } = default!;
-        public DbSet<LastName> LastName { get; set; } = default!;
+        public DbSet<LastName> LastNames { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
