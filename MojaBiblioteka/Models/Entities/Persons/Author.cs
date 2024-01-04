@@ -7,7 +7,7 @@ namespace MojaBiblioteka.Models.Entities.Persons
     {
         public int AuthorId { get; set; }
         [Display(Name = "Imię"), Required]
-        public Name Name { get; set; }
+        public Name FirstName { get; set; }
         [Display(Name = "Nazwisko"), Required]
         public LastName Surname { get; set; }
         [Display(Name = "Data urodzenia"), DataType(DataType.Date)]
