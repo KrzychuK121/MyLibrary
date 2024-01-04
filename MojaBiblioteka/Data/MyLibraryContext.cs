@@ -9,7 +9,7 @@ using MojaBiblioteka.Models.Entities.Persons;
 
 namespace MojaBiblioteka.Data
 {
-    public class MyLibraryContext : IdentityDbContext
+    public class MyLibraryContext : IdentityDbContext<User>
     {
         public MyLibraryContext (DbContextOptions<MyLibraryContext> options)
             : base(options)
