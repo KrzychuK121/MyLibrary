@@ -62,22 +62,14 @@ namespace MojaBiblioteka.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AuthorId,Name,Surname,DateOfBirth")] Author author)
+        public async Task<IActionResult> Create([Bind("AuthorId,FirstName,Surname,DateOfBirth")] Author author)
         {
             if (ModelState.IsValid)
             {
-                var Name = await _context.Names
-                    .Where(n => n.FirstName == author.FirstName.FirstName)
-                    .FirstOrDefaultAsync();
+                author.FirstName.FirstName = author.FirstName.FirstName.ToLower();
+                author.Surname.Surname = author.Surname.Surname.ToLower();
 
-                var Surname = await _context.LastNames
-                    .Where(l => l.Surname == author.Surname.Surname)
-                    .FirstOrDefaultAsync();
-
-                if(Name != null)
-                    author.FirstName = Name;
-                if(Surname != null)
-                    author.Surname = Surname;
+                SetAuthorsProperties(author);
 
                 _context.Add(author);
                 await _context.SaveChangesAsync();
@@ -112,7 +104,7 @@ namespace MojaBiblioteka.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int id, [Bind("AuthorId,Name,Surname,DateOfBirth")] Author author)
+        public async Task<IActionResult> EditPost(int id, [Bind("AuthorId,FirstName,Surname,DateOfBirth")] Author author)
         {
             if(id != author.AuthorId)
                 return NotFound();
@@ -121,18 +113,10 @@ namespace MojaBiblioteka.Controllers
             {
                 try
                 {
-                    var Name = await _context.Names
-                        .Where(n => n.FirstName == author.FirstName.FirstName)
-                        .FirstOrDefaultAsync();
+                    author.FirstName.FirstName = author.FirstName.FirstName.ToLower();
+                    author.Surname.Surname = author.Surname.Surname.ToLower();
 
-                    var Surname = await _context.LastNames
-                        .Where(l => l.Surname == author.Surname.Surname)
-                        .FirstOrDefaultAsync();
-
-                    if (Name != null)
-                        author.FirstName = Name;
-                    if (Surname != null)
-                        author.Surname = Surname;
+                    SetAuthorsProperties(author);
 
                     _context.Update(author);
                     await _context.SaveChangesAsync();
@@ -191,6 +175,22 @@ namespace MojaBiblioteka.Controllers
         private bool AuthorExists(int id)
         {
           return (_context.Authors?.Any(e => e.AuthorId == id)).GetValueOrDefault();
+        }
+
+        private async void SetAuthorsProperties(Author author)
+        {
+            var Name = await _context.Names
+                .Where(n => n.FirstName == author.FirstName.FirstName)
+                .SingleOrDefaultAsync();
+
+            var Surname = await _context.LastNames
+                .Where(l => l.Surname == author.Surname.Surname)
+                .SingleOrDefaultAsync();
+
+            if (Name != null)
+                author.FirstName = Name;
+            if (Surname != null)
+                author.Surname = Surname;
         }
     }
 }
