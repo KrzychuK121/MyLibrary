@@ -17,13 +17,16 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MojaBiblioteka.Data;
 using MojaBiblioteka.Models.Entities.Persons;
 
 namespace MojaBiblioteka.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
+        private readonly MyLibraryContext _context;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly IUserStore<User> _userStore;
@@ -32,12 +35,14 @@ namespace MojaBiblioteka.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
+            MyLibraryContext context,
             UserManager<User> userManager,
             IUserStore<User> userStore,
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
+            _context = context;
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
@@ -71,6 +76,10 @@ namespace MojaBiblioteka.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+            [Display(Name = "Imię"), Required]
+            public Name FirstName { get; set; } = new Name { FirstName = string.Empty };
+            [Display(Name = "Nazwisko"), Required]
+            public LastName Surname { get; set; } = new LastName { Surname = string.Empty };
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -114,6 +123,17 @@ namespace MojaBiblioteka.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
+
+                Input.FirstName.FirstName = Input.FirstName.FirstName.ToLower();
+                Input.Surname.Surname = Input.Surname.Surname.ToLower();
+
+                var FirstName = await _context.Names
+                    .SingleOrDefaultAsync(n => n.FirstName.Equals(Input.FirstName.FirstName));
+                var Surname = await _context.LastNames
+                    .SingleOrDefaultAsync(n => n.Surname.Equals(Input.Surname.Surname));
+
+                user.FirstName = FirstName != null ? FirstName : Input.FirstName;
+                user.Surname = Surname != null ? Surname : Input.Surname;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
