@@ -1,12 +1,12 @@
 ﻿@model MojaBiblioteka.Models.Entities.Persons.Author
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Dodaj autora";
 }
 
-<h1>Create</h1>
+<h1>Dodawanie</h1>
 
-<h4>Author</h4>
+<h4>Autor</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -28,14 +28,14 @@
                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Dodaj" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Powrót do listy</a>
 </div>
 
 @section Scripts {

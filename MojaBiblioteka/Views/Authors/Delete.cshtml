@@ -1,14 +1,14 @@
 ﻿@model MojaBiblioteka.Models.Entities.Persons.Author
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Usuń autora";
 }
 
-<h1>Delete</h1>
+<h1>Usuwanie</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Jesteś pewny, że chcesz usunąć?</h3>
 <div>
-    <h4>Author</h4>
+    <h4>Autor</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -40,7 +40,7 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="AuthorId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Usuń" class="btn btn-danger" /> |
+        <a asp-action="Index">Powrót do listy</a>
     </form>
 </div>
