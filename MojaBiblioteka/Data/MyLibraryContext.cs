@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MojaBiblioteka.Models.Entities.Book;
+using MojaBiblioteka.Models.Entities.Connector;
 using MojaBiblioteka.Models.Entities.Persons;
 
 namespace MojaBiblioteka.Data
@@ -24,6 +25,7 @@ namespace MojaBiblioteka.Data
         public DbSet<BookAuthor> BooksAuthors { get; set; } = default!;
         public DbSet<Name> Names { get; set; } = default!;
         public DbSet<LastName> LastNames { get; set; } = default!;
+        public DbSet<RentalTransaction> RentalTransactionList { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +34,8 @@ namespace MojaBiblioteka.Data
                 .HasKey(c => new { c.BookIsbn, c.CategoryId });
             modelBuilder.Entity<BookAuthor>()
                 .HasKey(b => new { b.BookIsbn, b.AuthorId });
+            modelBuilder.Entity<RentalTransaction>()
+                .HasKey(rt => new { rt.BookIsbn, rt.UserId });
         }
     }
 }
