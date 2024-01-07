@@ -22,9 +22,9 @@ namespace MojaBiblioteka.Controllers
         // GET: Authors
         public async Task<IActionResult> Index()
         {
-              return _context.Author != null ? 
-                View(await _context.Author
-                    .Include(a => a.Name)
+              return _context.Authors != null ? 
+                View(await _context.Authors
+                    .Include(a => a.FirstName)
                     .Include(a => a.Surname)
                     .ToListAsync()
                 ) :
@@ -34,13 +34,13 @@ namespace MojaBiblioteka.Controllers
         // GET: Authors/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Author == null)
+            if (id == null || _context.Authors == null)
             {
                 return NotFound();
             }
 
-            var author = await _context.Author
-                .Include(a => a.Name)
+            var author = await _context.Authors
+                .Include(a => a.FirstName)
                 .Include(a => a.Surname)
                 .FirstOrDefaultAsync(m => m.AuthorId == id);
             if (author == null)
@@ -62,22 +62,14 @@ namespace MojaBiblioteka.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AuthorId,Name,Surname,DateOfBirth")] Author author)
+        public async Task<IActionResult> Create([Bind("AuthorId,FirstName,Surname,DateOfBirth")] Author author)
         {
             if (ModelState.IsValid)
             {
-                var Name = await _context.Names
-                    .Where(n => n.Fistname == author.Name.Fistname)
-                    .FirstOrDefaultAsync();
+                author.FirstName.FirstName = author.FirstName.FirstName.ToLower();
+                author.Surname.Surname = author.Surname.Surname.ToLower();
 
-                var Surname = await _context.LastName
-                    .Where(l => l.Surname == author.Surname.Surname)
-                    .FirstOrDefaultAsync();
-
-                if(Name != null)
-                    author.Name = Name;
-                if(Surname != null)
-                    author.Surname = Surname;
+                SetAuthorsProperties(author);
 
                 _context.Add(author);
                 await _context.SaveChangesAsync();
@@ -90,13 +82,13 @@ namespace MojaBiblioteka.Controllers
         // GET: Authors/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Author == null)
+            if (id == null || _context.Authors == null)
             {
                 return NotFound();
             }
 
-            var author = await _context.Author
-                .Include(a => a.Name)
+            var author = await _context.Authors
+                .Include(a => a.FirstName)
                 .Include(a => a.Surname)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(a => a.AuthorId == id);
@@ -112,7 +104,7 @@ namespace MojaBiblioteka.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int id, [Bind("AuthorId,Name,Surname,DateOfBirth")] Author author)
+        public async Task<IActionResult> EditPost(int id, [Bind("AuthorId,FirstName,Surname,DateOfBirth")] Author author)
         {
             if(id != author.AuthorId)
                 return NotFound();
@@ -121,18 +113,10 @@ namespace MojaBiblioteka.Controllers
             {
                 try
                 {
-                    var Name = await _context.Names
-                        .Where(n => n.Fistname == author.Name.Fistname)
-                        .FirstOrDefaultAsync();
+                    author.FirstName.FirstName = author.FirstName.FirstName.ToLower();
+                    author.Surname.Surname = author.Surname.Surname.ToLower();
 
-                    var Surname = await _context.LastName
-                        .Where(l => l.Surname == author.Surname.Surname)
-                        .FirstOrDefaultAsync();
-
-                    if (Name != null)
-                        author.Name = Name;
-                    if (Surname != null)
-                        author.Surname = Surname;
+                    SetAuthorsProperties(author);
 
                     _context.Update(author);
                     await _context.SaveChangesAsync();
@@ -152,13 +136,13 @@ namespace MojaBiblioteka.Controllers
         // GET: Authors/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Author == null)
+            if (id == null || _context.Authors == null)
             {
                 return NotFound();
             }
 
-            var author = await _context.Author
-                .Include(a => a.Name)
+            var author = await _context.Authors
+                .Include(a => a.FirstName)
                 .Include(a => a.Surname)
                 .FirstOrDefaultAsync(m => m.AuthorId == id);
             if (author == null)
@@ -174,14 +158,14 @@ namespace MojaBiblioteka.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Author == null)
+            if (_context.Authors == null)
             {
                 return Problem("Entity set 'MyLibraryContext.Author'  is null.");
             }
-            var author = await _context.Author.FindAsync(id);
+            var author = await _context.Authors.FindAsync(id);
             if (author != null)
             {
-                _context.Author.Remove(author);
+                _context.Authors.Remove(author);
             }
             
             await _context.SaveChangesAsync();
@@ -190,7 +174,23 @@ namespace MojaBiblioteka.Controllers
 
         private bool AuthorExists(int id)
         {
-          return (_context.Author?.Any(e => e.AuthorId == id)).GetValueOrDefault();
+          return (_context.Authors?.Any(e => e.AuthorId == id)).GetValueOrDefault();
+        }
+
+        private async void SetAuthorsProperties(Author author)
+        {
+            var Name = await _context.Names
+                .Where(n => n.FirstName == author.FirstName.FirstName)
+                .SingleOrDefaultAsync();
+
+            var Surname = await _context.LastNames
+                .Where(l => l.Surname == author.Surname.Surname)
+                .SingleOrDefaultAsync();
+
+            if (Name != null)
+                author.FirstName = Name;
+            if (Surname != null)
+                author.Surname = Surname;
         }
     }
 }

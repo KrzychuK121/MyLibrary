@@ -1,4 +1,5 @@
-﻿using MojaBiblioteka.Models.Entities.Persons;
+﻿using MojaBiblioteka.Models.Entities.Connector;
+using MojaBiblioteka.Models.Entities.Persons;
 using System.ComponentModel.DataAnnotations;
 
 namespace MojaBiblioteka.Models.Entities.Book
@@ -22,6 +23,7 @@ namespace MojaBiblioteka.Models.Entities.Book
         public int PublisherId { get; set; }
         [Display(Name = "Ilość"), Required, Range(0, int.MaxValue)]
         public int Amount { get; set; }
+        public ICollection<RentalTransaction>? RentalTransactionList { get; set; }
 
     }
 }

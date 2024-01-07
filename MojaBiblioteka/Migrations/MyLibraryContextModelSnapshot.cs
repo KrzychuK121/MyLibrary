@@ -22,6 +22,143 @@ namespace MojaBiblioteka.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
             modelBuilder.Entity("MojaBiblioteka.Models.Entities.Book.Book", b =>
                 {
                     b.Property<string>("Isbn")
@@ -46,7 +183,7 @@ namespace MojaBiblioteka.Migrations
 
                     b.HasIndex("PublisherId");
 
-                    b.ToTable("Book");
+                    b.ToTable("Books");
                 });
 
             modelBuilder.Entity("MojaBiblioteka.Models.Entities.Book.BookAuthor", b =>
@@ -61,7 +198,7 @@ namespace MojaBiblioteka.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("BookAuthor");
+                    b.ToTable("BooksAuthors");
                 });
 
             modelBuilder.Entity("MojaBiblioteka.Models.Entities.Book.BookCategory", b =>
@@ -76,7 +213,7 @@ namespace MojaBiblioteka.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("BookCategory");
+                    b.ToTable("BooksCategories");
                 });
 
             modelBuilder.Entity("MojaBiblioteka.Models.Entities.Book.Category", b =>
@@ -115,6 +252,33 @@ namespace MojaBiblioteka.Migrations
                     b.ToTable("Publishers");
                 });
 
+            modelBuilder.Entity("MojaBiblioteka.Models.Entities.Connector.RentalTransaction", b =>
+                {
+                    b.Property<string>("BookIsbn")
+                        .HasColumnType("nvarchar(17)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProlongTermCounter")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RentalDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("BookIsbn", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RentalTransactionList");
+                });
+
             modelBuilder.Entity("MojaBiblioteka.Models.Entities.Persons.Author", b =>
                 {
                     b.Property<int>("AuthorId")
@@ -126,7 +290,7 @@ namespace MojaBiblioteka.Migrations
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("NameId")
+                    b.Property<int>("FirstNameNameId")
                         .HasColumnType("int");
 
                     b.Property<int>("SurnameLastNameId")
@@ -134,11 +298,11 @@ namespace MojaBiblioteka.Migrations
 
                     b.HasKey("AuthorId");
 
-                    b.HasIndex("NameId");
+                    b.HasIndex("FirstNameNameId");
 
                     b.HasIndex("SurnameLastNameId");
 
-                    b.ToTable("Author");
+                    b.ToTable("Authors");
                 });
 
             modelBuilder.Entity("MojaBiblioteka.Models.Entities.Persons.LastName", b =>
@@ -156,7 +320,7 @@ namespace MojaBiblioteka.Migrations
 
                     b.HasKey("LastNameId");
 
-                    b.ToTable("LastName");
+                    b.ToTable("LastNames");
                 });
 
             modelBuilder.Entity("MojaBiblioteka.Models.Entities.Persons.Name", b =>
@@ -167,7 +331,7 @@ namespace MojaBiblioteka.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NameId"), 1L, 1);
 
-                    b.Property<string>("Fistname")
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -175,6 +339,134 @@ namespace MojaBiblioteka.Migrations
                     b.HasKey("NameId");
 
                     b.ToTable("Names");
+                });
+
+            modelBuilder.Entity("MojaBiblioteka.Models.Entities.Persons.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("FirstNameNameId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SurnameLastNameId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FirstNameNameId");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("SurnameLastNameId");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("MojaBiblioteka.Models.Entities.Persons.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("MojaBiblioteka.Models.Entities.Persons.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MojaBiblioteka.Models.Entities.Persons.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("MojaBiblioteka.Models.Entities.Persons.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MojaBiblioteka.Models.Entities.Book.Book", b =>
@@ -226,11 +518,30 @@ namespace MojaBiblioteka.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("MojaBiblioteka.Models.Entities.Connector.RentalTransaction", b =>
+                {
+                    b.HasOne("MojaBiblioteka.Models.Entities.Book.Book", "Book")
+                        .WithMany("RentalTransactionList")
+                        .HasForeignKey("BookIsbn")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MojaBiblioteka.Models.Entities.Persons.User", "User")
+                        .WithMany("RentalTransactionList")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("MojaBiblioteka.Models.Entities.Persons.Author", b =>
                 {
-                    b.HasOne("MojaBiblioteka.Models.Entities.Persons.Name", "Name")
+                    b.HasOne("MojaBiblioteka.Models.Entities.Persons.Name", "FirstName")
                         .WithMany("Authors")
-                        .HasForeignKey("NameId")
+                        .HasForeignKey("FirstNameNameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -240,7 +551,26 @@ namespace MojaBiblioteka.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Name");
+                    b.Navigation("FirstName");
+
+                    b.Navigation("Surname");
+                });
+
+            modelBuilder.Entity("MojaBiblioteka.Models.Entities.Persons.User", b =>
+                {
+                    b.HasOne("MojaBiblioteka.Models.Entities.Persons.Name", "FirstName")
+                        .WithMany()
+                        .HasForeignKey("FirstNameNameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MojaBiblioteka.Models.Entities.Persons.LastName", "Surname")
+                        .WithMany()
+                        .HasForeignKey("SurnameLastNameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FirstName");
 
                     b.Navigation("Surname");
                 });
@@ -250,6 +580,8 @@ namespace MojaBiblioteka.Migrations
                     b.Navigation("BookAuthor");
 
                     b.Navigation("BookCategory");
+
+                    b.Navigation("RentalTransactionList");
                 });
 
             modelBuilder.Entity("MojaBiblioteka.Models.Entities.Book.Category", b =>
@@ -275,6 +607,11 @@ namespace MojaBiblioteka.Migrations
             modelBuilder.Entity("MojaBiblioteka.Models.Entities.Persons.Name", b =>
                 {
                     b.Navigation("Authors");
+                });
+
+            modelBuilder.Entity("MojaBiblioteka.Models.Entities.Persons.User", b =>
+                {
+                    b.Navigation("RentalTransactionList");
                 });
 #pragma warning restore 612, 618
         }

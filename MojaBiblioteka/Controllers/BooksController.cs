@@ -29,13 +29,13 @@ namespace MojaBiblioteka.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            var myLibraryContext = await _context.Book
+            var myLibraryContext = await _context.Books
                 .Include(b => b.Publisher)
                 .Include(b => b.BookCategory)
                     .ThenInclude(c => c.Category)
                 .Include(b => b.BookAuthor)
                     .ThenInclude(ba => ba.Author)
-                        .ThenInclude(a => a.Name)
+                        .ThenInclude(a => a.FirstName)
                 .Include(b => b.BookAuthor)
                     .ThenInclude(ba => ba.Author)
                         .ThenInclude(a => a.Surname)
@@ -47,18 +47,18 @@ namespace MojaBiblioteka.Controllers
         // GET: Books/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null || _context.Book == null)
+            if (id == null || _context.Books == null)
             {
                 return NotFound();
             }
 
-            var book = await _context.Book
+            var book = await _context.Books
                 .Include(b => b.Publisher)
                 .Include(b => b.BookCategory)
                     .ThenInclude(c => c.Category)
                 .Include(b => b.BookAuthor)
                     .ThenInclude(ba => ba.Author)
-                        .ThenInclude(a => a.Name)
+                        .ThenInclude(a => a.FirstName)
                 .Include(b => b.BookAuthor)
                     .ThenInclude(ba => ba.Author)
                         .ThenInclude(a => a.Surname)
@@ -152,18 +152,18 @@ namespace MojaBiblioteka.Controllers
         // GET: Books/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null || _context.Book == null)
+            if (id == null || _context.Books == null)
             {
                 return NotFound();
             }
 
-            var bookToUpdate = await _context.Book
+            var bookToUpdate = await _context.Books
                 .Include(b => b.Publisher)
                 .Include(b => b.BookCategory)
                     .ThenInclude(c => c.Category)
                 .Include(b => b.BookAuthor)
                     .ThenInclude(ba => ba.Author)
-                        .ThenInclude(a => a.Name)
+                        .ThenInclude(a => a.FirstName)
                 .Include(b => b.BookAuthor)
                     .ThenInclude(ba => ba.Author)
                         .ThenInclude(a => a.Surname)
@@ -198,13 +198,13 @@ namespace MojaBiblioteka.Controllers
                 return NotFound();
             }
 
-            var bookToUpdate = await _context.Book
+            var bookToUpdate = await _context.Books
                 .Include(b => b.Publisher)
                 .Include(b => b.BookCategory)
                     .ThenInclude(c => c.Category)
                 .Include(b => b.BookAuthor)
                     .ThenInclude(ba => ba.Author)
-                        .ThenInclude(a => a.Name)
+                        .ThenInclude(a => a.FirstName)
                 .Include(b => b.BookAuthor)
                     .ThenInclude(ba => ba.Author)
                         .ThenInclude(a => a.Surname)
@@ -340,18 +340,18 @@ namespace MojaBiblioteka.Controllers
         // GET: Books/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null || _context.Book == null)
+            if (id == null || _context.Books == null)
             {
                 return NotFound();
             }
 
-            var book = await _context.Book
+            var book = await _context.Books
                 .Include(b => b.Publisher)
                 .Include(b => b.BookCategory)
                     .ThenInclude(c => c.Category)
                 .Include(b => b.BookAuthor)
                     .ThenInclude(ba => ba.Author)
-                        .ThenInclude(a => a.Name)
+                        .ThenInclude(a => a.FirstName)
                 .Include(b => b.BookAuthor)
                     .ThenInclude(ba => ba.Author)
                         .ThenInclude(a => a.Surname)
@@ -371,14 +371,14 @@ namespace MojaBiblioteka.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.Book == null)
+            if (_context.Books == null)
             {
                 return Problem("Entity set 'MyLibraryContext.Book'  is null.");
             }
-            var book = await _context.Book.FindAsync(id);
+            var book = await _context.Books.FindAsync(id);
             if (book != null)
             {
-                _context.Book.Remove(book);
+                _context.Books.Remove(book);
             }
             
             await _context.SaveChangesAsync();
@@ -387,7 +387,7 @@ namespace MojaBiblioteka.Controllers
 
         private bool BookExists(string id)
         {
-          return (_context.Book?.Any(e => e.Isbn == id)).GetValueOrDefault();
+          return (_context.Books?.Any(e => e.Isbn == id)).GetValueOrDefault();
         }
 
         private void UpdateBookCategory(string[] selectedCategory, Book bookToUpdate)
@@ -446,7 +446,7 @@ namespace MojaBiblioteka.Controllers
                     bookToUpdate.BookAuthor.Select(ba => ba.AuthorId)
                 );
 
-            foreach(var authors in _context.Author)
+            foreach(var authors in _context.Authors)
             {
                 if (selectedAuthorsHS.Contains(authors.AuthorId.ToString()))
                 {
@@ -495,12 +495,12 @@ namespace MojaBiblioteka.Controllers
 
         private void AuthorsDropdown(IEnumerable<int> selected = null)
         {
-            var authors = from a in _context.Author
-                          orderby a.Name
+            var authors = from a in _context.Authors
+                          orderby a.FirstName
                           select new AuthorSelect
                           {
                               AuthorId = a.AuthorId,
-                              Name = a.Name,
+                              FirstName = a.FirstName,
                               Surname = a.Surname,
                               DateOfBirth = a.DateOfBirth
                           };

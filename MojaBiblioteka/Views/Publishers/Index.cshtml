@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<MojaBiblioteka.Models.Entities.Book.Publisher>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Spis wydawców";
 }
 
-<h1>Index</h1>
+<h1>Spis</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Dodaj wydawcę</a>
 </p>
 <table class="table">
     <thead>
@@ -25,9 +25,9 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.PublisherId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PublisherId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PublisherId">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.PublisherId">Edytuj</a> |
+                <a asp-action="Details" asp-route-id="@item.PublisherId">Opis</a> |
+                <a asp-action="Delete" asp-route-id="@item.PublisherId">Usuń</a>
             </td>
         </tr>
 }

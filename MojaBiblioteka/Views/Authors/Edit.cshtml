@@ -1,12 +1,12 @@
 ﻿@model MojaBiblioteka.Models.Entities.Persons.Author
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edytuj autora";
 }
 
-<h1>Edit</h1>
+<h1>Edycja</h1>
 
-<h4>Author</h4>
+<h4>Autor</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,9 +14,9 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="AuthorId" />
             <div class="form-group">
-                <label asp-for="Name.Fistname" class="control-label"></label>
-                <input asp-for="Name.Fistname" class="form-control" />
-                <span asp-validation-for="Name.Fistname" class="text-danger"></span>
+                <label asp-for="FirstName.FirstName" class="control-label"></label>
+                <input asp-for="FirstName.FirstName" class="form-control" />
+                <span asp-validation-for="FirstName.FirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Surname.Surname" class="control-label"></label>
@@ -29,14 +29,14 @@
                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Zapisz" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Powrót do listy</a>
 </div>
 
 @section Scripts {

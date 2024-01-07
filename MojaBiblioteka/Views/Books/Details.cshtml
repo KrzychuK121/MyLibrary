@@ -1,13 +1,13 @@
 ﻿@model MojaBiblioteka.Models.Entities.Book.Book
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "O książce";
 }
 
-<h1>Details</h1>
+<h1>Opis</h1>
 
 <div>
-    <h4>Book</h4>
+    <h4>Książka</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -40,7 +40,7 @@
                     ", " + bAuthor.Author.DateOfBirth.ToString().Split(' ')[0];
 
                 @Html.Encode(
-                    bAuthor.Author.Name.Fistname + " " +
+                    bAuthor.Author.FirstName.FirstName + " " +
                     bAuthor.Author.Surname.Surname +
                     dateToDisplay
                 );
@@ -86,6 +86,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Isbn">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Isbn">Edytuj</a> |
+    <a asp-action="Index">Powrót do listy</a>
 </div>

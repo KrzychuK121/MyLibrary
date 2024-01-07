@@ -1,11 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MojaBiblioteka.Data;
+using MojaBiblioteka.Models.Entities.Persons;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MyLibraryContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyLibraryContext") ?? throw new InvalidOperationException("Connection string 'MyLibraryContext' not found.")));
 
+builder.Services.AddDefaultIdentity<User>(
+        options => options.SignIn.RequireConfirmedAccount = true
+    )
+    .AddEntityFrameworkStores<MyLibraryContext>();
+
+builder.Services.AddRazorPages();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -32,10 +40,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapRazorPages();
 
 app.Run();

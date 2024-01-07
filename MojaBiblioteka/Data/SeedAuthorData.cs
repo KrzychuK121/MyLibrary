@@ -13,15 +13,15 @@ namespace MojaBiblioteka.Data
                     >()
                 ))
             {
-                if (context.Author.Any())
+                if (context.Authors.Any())
                     return; //Seeded
 
                 var Names = new Name[]
                 {
-                    new Name { Fistname = "maciek" },
-                    new Name { Fistname = "ania" },
-                    new Name { Fistname = "bartek" },
-                    new Name { Fistname = "marta" }
+                    new Name { FirstName = "maciek" },
+                    new Name { FirstName = "ania" },
+                    new Name { FirstName = "bartek" },
+                    new Name { FirstName = "marta" }
                 };
 
                 Console.WriteLine("Dlugosc Names: " + Names.Length);
@@ -47,34 +47,34 @@ namespace MojaBiblioteka.Data
                 //context.LastName.AddRange(LastNames);
                 foreach (LastName lastName in LastNames)
                 {
-                    context.LastName.Add(lastName);
+                    context.LastNames.Add(lastName);
                 }
 
                 context.SaveChanges();
 
-                context.Author.AddRange(
+                context.Authors.AddRange(
                     new Author
                     {
                         DateOfBirth = DateTime.Now,
-                        Name  = Names.Single(n => n.Fistname.Equals("maciek")),
+                        FirstName  = Names.Single(n => n.FirstName.Equals("maciek")),
                         Surname = LastNames.Single(l => l.Surname.Equals("podlaski")),
                     },
                     new Author
                     {
                         DateOfBirth = DateTime.Now,
-                        Name = Names.Single(n => n.Fistname.Equals("ania")),
+                        FirstName = Names.Single(n => n.FirstName.Equals("ania")),
                         Surname = LastNames.Single(l => l.Surname.Equals("kubicka"))
                     },
                     new Author
                     {
                         DateOfBirth = DateTime.Now,
-                        Name = Names.Single(n => n.Fistname.Equals("bartek")),
+                        FirstName = Names.Single(n => n.FirstName.Equals("bartek")),
                         Surname = LastNames.Single(l => l.Surname.Equals("kulesza"))
                     },
                     new Author
                     {
                         DateOfBirth = DateTime.Now,
-                        Name = Names.Single(n => n.Fistname.Equals("marta")),
+                        FirstName = Names.Single(n => n.FirstName.Equals("marta")),
                         Surname = LastNames.Single(l => l.Surname.Equals("skowronek"))
                     }
                 );
