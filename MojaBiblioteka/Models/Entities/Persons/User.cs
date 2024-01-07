@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MojaBiblioteka.Models.Entities.Connector;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,5 +15,6 @@ namespace MojaBiblioteka.Models.Entities.Persons
         public LastName Surname { get; set; } = new LastName { Surname = string.Empty };
         [Required]
         public int? SurnameLastNameId { get; set; }
+        public ICollection<RentalTransaction>? RentalTransactionList { get; set; }
     }
 }
