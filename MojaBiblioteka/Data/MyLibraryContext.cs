@@ -25,7 +25,7 @@ namespace MojaBiblioteka.Data
         public DbSet<BookAuthor> BooksAuthors { get; set; } = default!;
         public DbSet<Name> Names { get; set; } = default!;
         public DbSet<LastName> LastNames { get; set; } = default!;
-        public DbSet<RentalTransaction> RentalTransactionList { get; set; }
+        public DbSet<RentalTransaction> RentalTransactionList { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
