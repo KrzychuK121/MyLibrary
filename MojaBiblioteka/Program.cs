@@ -24,9 +24,10 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    // Uruchomienie inicjalizacji bazy
+    // Enable database initialization
     //SeedAuthorData.Initialize(services);
-    SeedRoles.Initialize(services);
+    // Enable users' roles initialization
+    //SeedRoles.Initialize(services);
 }
 
 // Configure the HTTP request pipeline.
