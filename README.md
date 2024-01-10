@@ -9,7 +9,7 @@ It's a web application using ASP.NET Core 6 technology with MVC, Entity Framewor
 There are few default accounts. These accounts allows you to test full potential of the application.
 
 ### Administrator account
-**login:** administrator@test.com
+**login:** administrator@test.com<br>
 **password:** Adm1n1str@tor
 
 ### Employee account
