@@ -9,9 +9,10 @@ builder.Services.AddDbContext<MyLibraryContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyLibraryContext") ?? throw new InvalidOperationException("Connection string 'MyLibraryContext' not found.")));
 
 builder.Services.AddDefaultIdentity<User>(
-        options => options.SignIn.RequireConfirmedAccount = true
-    )
-    .AddEntityFrameworkStores<MyLibraryContext>();
+    options => options.SignIn.RequireConfirmedAccount = true
+)
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<MyLibraryContext>();
 
 builder.Services.AddRazorPages();
 // Add services to the container.
@@ -25,6 +26,7 @@ using (var scope = app.Services.CreateScope())
 
     // Uruchomienie inicjalizacji bazy
     //SeedAuthorData.Initialize(services);
+    SeedRoles.Initialize(services);
 }
 
 // Configure the HTTP request pipeline.
