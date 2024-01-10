@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Policy;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -17,6 +18,7 @@ using Newtonsoft.Json.Bson;
 
 namespace MojaBiblioteka.Controllers
 {
+    [Authorize(Roles = "Admin, Employee, Client")]
     public class BooksController : Controller
     {
         private readonly MyLibraryContext _context;
@@ -45,6 +47,7 @@ namespace MojaBiblioteka.Controllers
         }
 
         // GET: Books/Details/5
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Details(string id)
         {
             if (id == null || _context.Books == null)
@@ -74,6 +77,7 @@ namespace MojaBiblioteka.Controllers
         }
 
         // GET: Books/Create
+        [Authorize(Roles = "Admin, Employee")]
         public IActionResult Create()
         {
             PublishersDropdown();
@@ -87,6 +91,7 @@ namespace MojaBiblioteka.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Create(
             [Bind("Isbn,Title,ReleaseDate,PublisherId,Amount")] Book book,
             string[] selectedCategories,
@@ -150,6 +155,7 @@ namespace MojaBiblioteka.Controllers
         }
 
         // GET: Books/Edit/5
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null || _context.Books == null)
@@ -187,6 +193,7 @@ namespace MojaBiblioteka.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Edit(
             string? id,
             string[] selectedCategories,
@@ -338,6 +345,7 @@ namespace MojaBiblioteka.Controllers
          */
 
         // GET: Books/Delete/5
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null || _context.Books == null)
@@ -369,6 +377,7 @@ namespace MojaBiblioteka.Controllers
         // POST: Books/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             if (_context.Books == null)
