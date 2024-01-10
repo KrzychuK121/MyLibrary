@@ -13,9 +13,9 @@ There are few default accounts. These accounts allows you to test full potential
 **password:** Adm1n1str@tor
 
 ### Employee account
-**login:** pracownik@test.com
+**login:** pracownik@test.com<br>
 **password:** Pr@cown1k
 
 ### Client account
-**login:** klient@test.com
+**login:** klient@test.com<br>
 **password:** Kl1&nt
