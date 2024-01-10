@@ -11,7 +11,7 @@ namespace MojaBiblioteka.Data
 
             bool ifRolesCreated = false;
 
-            string[] roles = { "Admin", "Employee" };
+            string[] roles = { "Admin", "Employee", "Client" };
 
             Console.WriteLine();
             Console.WriteLine("------SeedRoles.Initialize()------");
