@@ -18,22 +18,24 @@ namespace MojaBiblioteka.Models.Entities.Connector
         [Required]
         [Display(Name = "Data zwrotu"), DataType(DataType.Date)]
         public DateTime DueDate { get; set; }
-        [Required]
-        [Range(0, 3)]
+        [Required, Range(0, 3)]
+        [Display(Name = "Możliwa ilość przedłużeń")]
         [Description("How many times can User prolong the term of the book return. Going from 3 to 0")]
         public int ProlongTermCounter { get; set; } = 3;
         [Required]
         public int Status { get; set; } = 0; // BookStatus here
 
-        public enum BookStatus{
-            Ordered,
-            Cancelled,
-            ReadyToPickUp,
-            PickedUp,
-            NotPickedUp,
-            Returned,
-            NotReturned,
-            Closed // Thread closed, archived
-        }
+    }
+
+    public enum BookStatus
+    {
+        Ordered,
+        Cancelled,
+        ReadyToPickUp,
+        PickedUp,
+        NotPickedUp,
+        Returned,
+        NotReturned,
+        Closed // Thread closed, archived
     }
 }
