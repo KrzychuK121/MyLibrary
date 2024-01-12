@@ -43,6 +43,13 @@ namespace MojaBiblioteka.Controllers
                         .ThenInclude(a => a.Surname)
                 .AsNoTracking()
                 .ToListAsync();
+
+            if (TempData["message"] != null)
+                ViewData["message"] = TempData["message"];
+
+            if (TempData["type"] != null)
+                ViewData["type"] = TempData["type"];
+
             return View(myLibraryContext);
         }
 
@@ -260,89 +267,6 @@ namespace MojaBiblioteka.Controllers
             AuthorsDropdown(selectedAuthors);
             return View(bookToUpdate);
         }
-
-        /*
-            // POST: Books/Edit/5
-            // To protect from overposting attacks, enable the specific properties you want to bind to.
-            // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(
-                string id, 
-                [Bind("Isbn,Title,ReleaseDate,PublisherId,Amount")] Book book,
-                string[] selectedCategories,
-                string[] AuthorsId
-            )
-            {
-                if (id != book.Isbn)
-                {
-                    return NotFound();
-                }
-
-                if (book.PublisherId != 0)
-                {
-                    book.Publisher = await _context.Publishers
-                        .SingleOrDefaultAsync(p => p.PublisherId == book.PublisherId);
-                }
-
-                if(book.BookAuthor is null || book.BookAuthor.Count() == 0)
-                {
-                    book.BookAuthor = _context.BookAuthor
-                        .Where(ba => ba.BookIsbn.Equals(book.Isbn))
-                        .ToList();
-                }
-
-                if (book.BookCategory is null || book.BookCategory.Count() == 0)
-                {
-                    book.BookCategory = _context.BookCategory
-                        .Where(ba => ba.BookIsbn.Equals(book.Isbn))
-                        .ToList();
-                }
-
-                UpdateBookCategory(selectedCategories, book);
-                UpdateBookAuthor(AuthorsId, book);
-
-                ModelState.Clear();
-                if (ModelState.IsValid)
-                {
-                    try
-                    {
-                        _context.Update(book);
-                        await _context.SaveChangesAsync();
-                        Console.WriteLine();
-                        Console.WriteLine("Zapisalo sie");
-                        Console.WriteLine();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!BookExists(book.Isbn))
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                    return RedirectToAction(nameof(Index));
-                }
-                UpdateBookCategory(selectedCategories, book);
-                UpdateBookAuthor(AuthorsId, book);
-
-                PublishersDropdown(book.PublisherId);
-                CategoriesCheckboxes(book);
-
-                IEnumerable<int> selectedAuthors = new List<int>();
-                foreach (var authorId in AuthorsId)
-                {
-                    selectedAuthors.Append(int.Parse(authorId));
-                }
-
-                AuthorsDropdown(selectedAuthors);
-                return View(book);
-            }
-         
-         */
 
         // GET: Books/Delete/5
         [Authorize(Roles = "Admin, Employee")]
