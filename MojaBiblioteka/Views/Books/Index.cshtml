@@ -1,12 +1,18 @@
 ﻿@using MojaBiblioteka.Models.Entities.Book;
+@using MojaBiblioteka.Models.ViewModels.Messages;
 @model IEnumerable<Book>
 
 @{
     ViewData["Title"] = "Spis książek";
+    Message mess = null;
+    if (ViewData["message"] != null && !string.IsNullOrWhiteSpace((string)ViewData["message"]))
+    {
+        mess = new Message { MessageText = (string)ViewData["message"], Type = (int) ViewData["type"] };
+    }
 }
 
 <h1>Spis</h1>
-
+@Html.Partial("../Connector/_AlertMessage", mess)
 <p>
     @if (
         Context.User.IsInRole("Admin") ||
@@ -96,12 +102,24 @@
                 @Html.DisplayFor(modelItem => item.ReleaseDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Amount)
+                @Html.Raw(item.Amount == 0 ? "Brak" : item.Amount)
             </td>
             <td>
                 @if (Context.User.IsInRole("Client"))
                 {
-                    <a asp-action="Borrow" asp-route-id="@item.Isbn">Wypożycz</a>
+                    <form 
+                        method="POST"
+                        asp-controller="RentalTransactions"
+                        asp-action="Create"
+                        asp-route-bookIsbn="@item.Isbn"
+                    >
+                        <input 
+                            type="submit" 
+                            value="Wypożycz" 
+                            class="btn btn-primary"
+                            @Html.Raw(item.Amount == 0 ? "disabled" : "")
+                        />
+                    </form>
                 }
                 @if(
                     Context.User.IsInRole("Admin") ||
