@@ -1,0 +1,24 @@
+﻿@using MojaBiblioteka.Models.ViewModels.Messages;
+@model Message
+
+@if (Model != null && !String.IsNullOrEmpty(Model.MessageText))
+{
+    var statusMessageClass = "primary";
+    switch (Model.Type)
+    {
+        case (int) Types.Information:
+            statusMessageClass = "info";
+            break;
+        case (int) Types.Error:
+            statusMessageClass = "danger";
+            break;
+        case (int)  Types.Success:
+            statusMessageClass = "success";
+            break;
+    }
+    
+    <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        @Model.MessageText
+    </div>
+}
