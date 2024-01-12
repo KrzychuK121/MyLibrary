@@ -1,47 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using MojaBiblioteka.Data;
+using MojaBiblioteka.Models.Entities.Book;
 using MojaBiblioteka.Models.Entities.Connector;
+using MojaBiblioteka.Models.Entities.Persons;
+using MojaBiblioteka.Models.ViewModels.Connector;
+using MojaBiblioteka.Models.ViewModels.Messages;
 
 namespace MojaBiblioteka.Controllers
 {
     public class RentalTransactionsController : Controller
     {
         private readonly MyLibraryContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public RentalTransactionsController(MyLibraryContext context)
+        public RentalTransactionsController(
+            MyLibraryContext context,
+            UserManager<User> userManager
+        )
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: RentalTransactions
         public async Task<IActionResult> Index()
         {
             var rentalTransactionList = await _context.RentalTransactionList
-                .Include(r => r.Book)
+                .Include(rt => rt.Book)
                     .ThenInclude(b => b.Publisher)
-                .Include(r => r.Book)
+                .Include(rt => rt.Book)
                     .ThenInclude(b => b.BookCategory)
                         .ThenInclude(bc => bc.Category)
-                .Include(r => r.Book)
+                .Include(rt => rt.Book)
                     .ThenInclude(b => b.BookAuthor)
                         .ThenInclude(ba => ba.Author)
                             .ThenInclude(a => a.FirstName)
-                .Include(r => r.Book)
+                .Include(rt => rt.Book)
                     .ThenInclude(b => b.BookAuthor)
                         .ThenInclude(ba => ba.Author)
                             .ThenInclude(a => a.Surname)
-                .Include(r => r.User)
+                .Include(rt => rt.User)
                     .ThenInclude(u => u.FirstName)
-                .Include(r => r.User)
+                .Include(rt => rt.User)
                     .ThenInclude(u => u.Surname)
+                .OrderBy(rt => rt.DueDate)
                 .AsNoTracking()
                 .ToListAsync();
+
+            return View(rentalTransactionList);
+        }
+
+        // GET: RentalTransactions/Index?userId
+        public async Task<IActionResult> IndexUser(string userId)
+        {
+            if (userId == null || string.IsNullOrWhiteSpace(userId))
+                return NotFound();
+
+            var loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != loggedUserId && User.IsInRole("Client"))
+                userId = loggedUserId;
+
+            var rentalTransactionList = await _context.RentalTransactionList
+                .Include(rt => rt.Book)
+                    .ThenInclude(b => b.Publisher)
+                .Include(rt => rt.Book)
+                    .ThenInclude(b => b.BookCategory)
+                        .ThenInclude(bc => bc.Category)
+                .Include(rt => rt.Book)
+                    .ThenInclude(b => b.BookAuthor)
+                        .ThenInclude(ba => ba.Author)
+                            .ThenInclude(a => a.FirstName)
+                .Include(rt => rt.Book)
+                    .ThenInclude(b => b.BookAuthor)
+                        .ThenInclude(ba => ba.Author)
+                            .ThenInclude(a => a.Surname)
+                .OrderBy(rt => rt.DueDate)
+                .Where(rt => rt.UserId.Equals(userId))
+                .AsNoTracking()
+                .ToListAsync();
+
+            if (rentalTransactionList.Count() == 0)
+                return NotFound();
 
             return View(rentalTransactionList);
         }
@@ -66,30 +114,70 @@ namespace MojaBiblioteka.Controllers
             return View(rentalTransaction);
         }
 
-        // GET: RentalTransactions/Create
-        public IActionResult Create()
-        {
-            ViewData["BookIsbn"] = new SelectList(_context.Books, "Isbn", "Isbn");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
-        }
-
         // POST: RentalTransactions/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookIsbn,UserId,RentalDate,DueDate,ProlongTermCounter,Status")] RentalTransaction rentalTransaction)
+        public async Task<IActionResult> Create(string bookIsbn)
         {
+            if (bookIsbn == null)
+                return NotFound();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var bookToRent = await _context.Books
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(b => b.Isbn == bookIsbn);
+
+            if (bookToRent == null)
+                return NotFound();
+            if(bookToRent.Amount == 0)
+            {
+                TempData["message"] = "Wybrana książka jest niedostępna. Poczekaj aż ktoś zwróci egzemplarz do biblioteki.";
+                TempData["type"] = Types.Error;
+                return RedirectToAction("Index", "Books");
+            }
+            // It returns rental transaction connected with logged user who wants to borrow this book.
+            // But only when this book is not cancelled, returned or closed (he still has it or will have soon)
+            // It will prevent user from renting the same book secound time while he shouldn't.
+            var rental = await _context.RentalTransactionList
+                .SingleOrDefaultAsync(rt => 
+                    rt.BookIsbn.Equals(bookIsbn) && 
+                    rt.UserId.Equals(userId) &&
+                    rt.Status != (int) BookStatus.Cancelled &&
+                    rt.Status != (int) BookStatus.Returned &&
+                    rt.Status != (int) BookStatus.Closed
+                );
+
+            if (rental != null)
+            {
+                TempData["message"] = "Już wypożyczyłeś tę książkę. Upewnij się, że zwróciłeś książkę, którą chcesz wypożyczyć. " +
+                    "Jeśli uważasz, że to błąd, skontaktuj się z nami.";
+                TempData["type"] = Types.Error;
+                return RedirectToAction("Index", "Books");
+            }
+
+            var rentalTransaction = new RentalTransaction {
+                BookIsbn = bookIsbn,
+                Book = bookToRent,
+                UserId = userId,
+                User = await _userManager.GetUserAsync(User)
+            };
+
+            ModelState.Clear();
             if (ModelState.IsValid)
             {
                 _context.Add(rentalTransaction);
+
+                bookToRent.Amount--;
+                _context.Update(bookToRent);
+
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(IndexUser), new { userId = userId });
             }
-            ViewData["BookIsbn"] = new SelectList(_context.Books, "Isbn", "Isbn", rentalTransaction.BookIsbn);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", rentalTransaction.UserId);
-            return View(rentalTransaction);
+
+            return RedirectToAction("Index", "Books");
         }
 
         // GET: RentalTransactions/Edit/5
