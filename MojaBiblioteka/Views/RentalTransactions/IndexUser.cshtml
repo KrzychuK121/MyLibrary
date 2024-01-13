@@ -56,16 +56,15 @@
                         item.Status == (int) BookStatus.ReadyToPickUp
                     )
                     {
-                        @*
-                        First I have to change ID in RentalTransactions
+                        
                         <form 
                             method="POST"
                             asp-action="Cancel"
+                            asp-route-userId="@item.UserId"
                         >
-                            <input type="hidden" asp-for="@item.BookIsbn">
+                            <input type="hidden" asp-route-id="@item.RentalTransactionId" />
+                            <input type="submit" value="Anuluj"/>
                         </form>
-                        *@
-                        @Html.Raw("Cancel ");
                     }
                         
 
