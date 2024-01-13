@@ -16,6 +16,15 @@ There are few default accounts. These accounts allows you to test full potential
 **login:** pracownik@test.com<br>
 **password:** Pr@cown1k
 
-### Client account
+### Client accounts
+**Client 1**
 **login:** klient@test.com<br>
+**password:** Kl1&nt
+
+**Client 2**
+**login:** klient2@test.com<br>
+**password:** Kl1&nt
+
+**Client 3**
+**login:** klient3@test.com<br>
 **password:** Kl1&nt
