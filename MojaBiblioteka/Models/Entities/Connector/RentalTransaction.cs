@@ -8,6 +8,7 @@ namespace MojaBiblioteka.Models.Entities.Connector
 {
     public class RentalTransaction
     {
+        public int RentalTransactionId { get; set; }
         public string BookIsbn { get; set; }
         public string UserId { get; set; }
         [Display(Name = "Książka")]
