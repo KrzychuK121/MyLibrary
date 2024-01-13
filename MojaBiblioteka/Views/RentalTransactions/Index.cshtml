@@ -1,0 +1,88 @@
+﻿@using MojaBiblioteka.Models.Entities.Connector;
+@using MojaBiblioteka.Models.ViewModels.Connector;
+@model IEnumerable<MojaBiblioteka.Models.Entities.Connector.RentalTransaction>
+
+@{
+    ViewData["Title"] = "Spis wypożyczeń";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isAdminOrEmployee = User.IsInRole("Admin") || User.IsInRole("Employee");
+    string? currUserId = null;
+    var counter = 0;
+}
+
+<h1>Spis</h1>
+
+
+@foreach (var item in Model) {
+    
+    @if (currUserId == null || currUserId != item.UserId)
+    {
+        if (currUserId != null)
+        {
+            @:</tbody>
+            @:</table>
+            @:</div>
+           
+        }
+        @:<div class="row">
+            currUserId = item.UserId;
+            @:<h2>Książki użytkownika @item.User.FirstName.FirstName @item.User.Surname.Surname</h2>
+            @:<hr>
+            @:<table class="table">
+                @:<thead>
+                    @:<tr>
+                        @:<th>
+                        @Html.DisplayNameFor(model => model.Book)
+                        @:</th>
+                        @:<th>
+                        @Html.DisplayNameFor(model => model.RentalDate)
+                        @:</th>
+                        @:<th>
+                        @Html.DisplayNameFor(model => model.DueDate)
+                        @:</th>
+                        @:<th>
+                        @Html.DisplayNameFor(model => model.ProlongTermCounter)
+                        @:</th>
+                        @:<th>
+                        @Html.DisplayNameFor(model => model.Status)
+                        @:</th>
+                        @:<th></th>
+                    @:</tr>
+                @:</thead>
+                @:<tbody>
+    }
+         Console.WriteLine("\nElse wykonal sie: " + ++counter + "\n");
+            <tr>
+                <td>
+                    @Html.Encode(item.Book.Title + ", " + item.Book.Publisher.Name + ", " + item.Book.ReleaseDate.ToString().Split(' ')[0])
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RentalDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProlongTermCounter)
+                </td>
+                <td>
+                    @Html.Raw(RentalTransactionsVM.GetStatusText(item.Status))
+                </td>
+                <td>
+                    @if (isAdminOrEmployee)
+                    {
+                        @Html.ActionLink("Edytuj", "Edit", new { id = item.RentalTransactionId }) @Html.Raw(" | ")
+                        @Html.ActionLink("Opis", "Details", new { id = item.RentalTransactionId }); @Html.Raw(" | ");
+                        @Html.ActionLink("Usuń", "Delete", new { id = item.RentalTransactionId });
+                    }
+                </td>
+            </tr>   
+}
+@if(currUserId != null)
+{
+                @:</tbody>
+            @:</table>
+        @:</div>
+}
+
+    
