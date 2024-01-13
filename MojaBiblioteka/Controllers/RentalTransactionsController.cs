@@ -21,6 +21,7 @@ namespace MojaBiblioteka.Controllers
     {
         private readonly MyLibraryContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly IQueryable<RentalTransaction> rentTransList;
 
         public RentalTransactionsController(
             MyLibraryContext context,
@@ -29,12 +30,7 @@ namespace MojaBiblioteka.Controllers
         {
             _context = context;
             _userManager = userManager;
-        }
-
-        // GET: RentalTransactions
-        public async Task<IActionResult> Index()
-        {
-            var rentalTransactionList = await _context.RentalTransactionList
+            rentTransList = _context.RentalTransactionList
                 .Include(rt => rt.Book)
                     .ThenInclude(b => b.Publisher)
                 .Include(rt => rt.Book)
@@ -47,12 +43,19 @@ namespace MojaBiblioteka.Controllers
                 .Include(rt => rt.Book)
                     .ThenInclude(b => b.BookAuthor)
                         .ThenInclude(ba => ba.Author)
-                            .ThenInclude(a => a.Surname)
+                            .ThenInclude(a => a.Surname);
+        }
+
+        // GET: RentalTransactions
+        public async Task<IActionResult> Index()
+        {
+            var rentalTransactionList = await rentTransList
                 .Include(rt => rt.User)
                     .ThenInclude(u => u.FirstName)
                 .Include(rt => rt.User)
                     .ThenInclude(u => u.Surname)
-                .OrderBy(rt => rt.DueDate)
+                .OrderBy(rt => rt.UserId)
+                .ThenBy(rt => rt.DueDate)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -69,27 +72,11 @@ namespace MojaBiblioteka.Controllers
             if (userId != loggedUserId && User.IsInRole("Client"))
                 userId = loggedUserId;
 
-            var rentalTransactionList = await _context.RentalTransactionList
-                .Include(rt => rt.Book)
-                    .ThenInclude(b => b.Publisher)
-                .Include(rt => rt.Book)
-                    .ThenInclude(b => b.BookCategory)
-                        .ThenInclude(bc => bc.Category)
-                .Include(rt => rt.Book)
-                    .ThenInclude(b => b.BookAuthor)
-                        .ThenInclude(ba => ba.Author)
-                            .ThenInclude(a => a.FirstName)
-                .Include(rt => rt.Book)
-                    .ThenInclude(b => b.BookAuthor)
-                        .ThenInclude(ba => ba.Author)
-                            .ThenInclude(a => a.Surname)
+            var rentalTransactionList = await rentTransList
                 .OrderBy(rt => rt.DueDate)
                 .Where(rt => rt.UserId.Equals(userId))
                 .AsNoTracking()
                 .ToListAsync();
-
-            if (rentalTransactionList.Count() == 0)
-                return NotFound();
 
             return View(rentalTransactionList);
         }
@@ -178,6 +165,24 @@ namespace MojaBiblioteka.Controllers
             }
 
             return RedirectToAction("Index", "Books");
+        }
+
+        // POST: RentalTransactions/Cancel/5/
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(string id, string userId)
+        {
+            var rentalTransactionToUpdate = await _context.RentalTransactionList
+                .FirstOrDefaultAsync(rt => rt.UserId.Equals(userId));
+
+            if (rentalTransactionToUpdate == null)
+                return NotFound();
+
+            rentalTransactionToUpdate.Status = (int) BookStatus.Cancelled;
+            
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(IndexUser), new {userId = userId});
         }
 
         // GET: RentalTransactions/Edit/5

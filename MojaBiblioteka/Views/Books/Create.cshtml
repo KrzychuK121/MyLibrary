@@ -78,23 +78,24 @@
                             firstChar = category.Category.Name[0];
                             @:<h2>@firstChar</h2>
                             @:<hr>
+
+                            }
+                            @:<div class="col-lg-6 col-xl-4">
+                                <input type="checkbox"
+                                    name = "selectedCategories"
+                                    value = "@category.Category.CategoryId"
+                                    @(Html.Raw(category.Checked ? "checked=\"checked\"" : "")) />
+                        
+                            @category.Category.Name
+                        
+                            @:</div>
                         }
-                        @:<div class="col-lg-6 col-xl-4">
-                            <input type="checkbox"
-                                name = "selectedCategories"
-                                value = "@category.Category.CategoryId"
-                                @(Html.Raw(category.Checked ? "checked=\"checked\"" : "")) />
-                        
-                        @category.Category.Name
-                        
-                        @:</div>
-                    }
-                    if(ViewBag.Categories.Count != 0)
-                    {
-                        @:</div>
-                    }
+                        if(ViewBag.Categories.Count != 0)
+                        {
+                            @:</div>
+                        }
                     
-                }  
+                    }  
                 </div>
             </div>
             <div class="form-group">
