@@ -34,8 +34,6 @@ namespace MojaBiblioteka.Data
                 .HasKey(c => new { c.BookIsbn, c.CategoryId });
             modelBuilder.Entity<BookAuthor>()
                 .HasKey(b => new { b.BookIsbn, b.AuthorId });
-            modelBuilder.Entity<RentalTransaction>()
-                .HasKey(rt => new { rt.BookIsbn, rt.UserId });
         }
     }
 }
