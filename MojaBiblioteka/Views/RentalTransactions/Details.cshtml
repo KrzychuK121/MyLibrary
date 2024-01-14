@@ -105,14 +105,9 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edytuj", "Edit", new { id = Model.RentalTransactionId }) |
-    @if(ViewData["userId"] == null)
+    @if (isAdminOrEmployee) 
     {
-        <a asp-action="Index">Powrót do listy</a>
-    }
-    else
-    {
-        <a asp-action="IndexUser" asp-route-userId="@ViewData["userId"]">Powrót do listy</a>
-    }
-
+        @Html.ActionLink("Edytuj", "Edit", new { id = Model.RentalTransactionId, userId = ViewData["userId"] }); @Html.Raw(" | ");
+    } 
+    @await Html.PartialAsync("_GoBackLink", ViewData["userId"])
 </div>
