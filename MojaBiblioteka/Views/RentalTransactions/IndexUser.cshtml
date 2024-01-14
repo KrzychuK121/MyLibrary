@@ -28,7 +28,7 @@
     var user = Model.First().User;
     <h2>Książki użytkownika <span class="text-capitalize">@user.FirstName.FirstName @user.Surname.Surname</span></h2>
 }
-@await Html.PartialAsync("../Connector/_AlertMessage", mess);
+@await Html.PartialAsync("../Connector/_AlertMessage", mess)
 <table class="table">
     <thead>
         <tr>
@@ -82,8 +82,8 @@
                                 method="POST"
                                 asp-action="Cancel"
                                 asp-route-userId="@item.UserId"
+                                asp-route-id="@item.RentalTransactionId"
                             >
-                                <input type="hidden" asp-route-id="@item.RentalTransactionId" />
                                 <input class="btn btn-danger" type="submit" value="Anuluj" />
                             </form>
                         }
