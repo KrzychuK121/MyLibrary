@@ -69,6 +69,12 @@ namespace MojaBiblioteka.Controllers
         [Authorize(Roles = "Admin, Employee, Client")]
         public async Task<IActionResult> IndexUser(string userId)
         {
+            if (TempData["message"] != null)
+                ViewData["message"] = TempData["message"];
+
+            if (TempData["type"] != null)
+                ViewData["type"] = TempData["type"];
+
             if (userId == null || string.IsNullOrWhiteSpace(userId))
                 return NotFound();
 
@@ -189,12 +195,15 @@ namespace MojaBiblioteka.Controllers
         // POST: RentalTransactions/Cancel/5/
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cancel(string id, string userId)
+        public async Task<IActionResult> Cancel(int id, string userId)
         {
             var rentalTransactionToUpdate = await _context.RentalTransactionList
-                .FirstOrDefaultAsync(rt => rt.UserId.Equals(userId));
+                .FirstOrDefaultAsync(rt => rt.RentalTransactionId == id);
 
             if (rentalTransactionToUpdate == null)
+                return NotFound();
+
+            if (!rentalTransactionToUpdate.UserId.Equals(userId))
                 return NotFound();
 
             rentalTransactionToUpdate.Status = (int) BookStatus.Cancelled;
@@ -239,7 +248,7 @@ namespace MojaBiblioteka.Controllers
                 return RedirectToAction(nameof(IndexUser), new { userId = loggedUserId });
             }
 
-            rentalTransactionToUpdate.DueDate.AddMonths(1);
+            rentalTransactionToUpdate.DueDate = rentalTransactionToUpdate.DueDate.AddMonths(1);
             rentalTransactionToUpdate.ProlongTermCounter--;
 
             try
