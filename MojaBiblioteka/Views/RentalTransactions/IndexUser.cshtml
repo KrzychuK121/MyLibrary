@@ -1,11 +1,17 @@
 ﻿@using MojaBiblioteka.Models.Entities.Connector;
 @using MojaBiblioteka.Models.ViewModels.Connector;
+@using MojaBiblioteka.Models.ViewModels.Messages;
 @model IEnumerable<MojaBiblioteka.Models.Entities.Connector.RentalTransaction>
 
 @{
     ViewData["Title"] = "Spis wypożyczeń";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var isAdminOrEmployee = User.IsInRole("Admin") || User.IsInRole("Employee");
+    Message mess = null;
+    if (ViewData["message"] != null && !string.IsNullOrWhiteSpace((string)ViewData["message"]))
+    {
+        mess = new Message { MessageText = (string)ViewData["message"], Type = (int)ViewData["type"] };
+    }
 }
 
 <h1>Spis</h1>
@@ -22,7 +28,7 @@
     var user = Model.First().User;
     <h2>Książki użytkownika <span class="text-capitalize">@user.FirstName.FirstName @user.Surname.Surname</span></h2>
 }
-
+@await Html.PartialAsync("../Connector/_AlertMessage", mess);
 <table class="table">
     <thead>
         <tr>
@@ -87,9 +93,8 @@
                             <form
                                 method="POST"
                                 asp-action="ProlongTerm"
-                                asp-route-userId="@item.UserId"
+                                asp-route-id="@item.RentalTransactionId"
                             >
-                                <input type="hidden" asp-route-id="@item.RentalTransactionId" />
                                 <input 
                                     class="btn btn-success" 
                                     type="submit" 
