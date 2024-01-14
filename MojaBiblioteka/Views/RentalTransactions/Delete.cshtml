@@ -107,9 +107,9 @@
         </dd>
     </dl>
     
-    <form asp-action="Delete">
+    <form asp-action="Delete" asp-route-userId="@ViewData["userId"]">
         <input type="hidden" asp-for="RentalTransactionId" />
         <input type="submit" value="Usuń" class="btn btn-danger" /> |
-        <a asp-action="Index">Powrót do listy</a>
+        @await Html.PartialAsync("_GoBackLink", ViewData["userId"])
     </form>
 </div>
