@@ -1,0 +1,10 @@
+﻿@model string // ViewData["userId"]
+
+@if (Model == null)
+{
+    <a asp-action="Index">Powrót do listy</a>
+}
+else
+{
+    <a asp-action="IndexUser" asp-route-userId="@Model">Powrót do listy</a>
+}
