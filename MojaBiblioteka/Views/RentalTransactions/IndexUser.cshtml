@@ -10,6 +10,15 @@
 
 <h1>Spis</h1>
 
+<div>
+    <a asp-action="Index">Powrót do listy</a>
+</div>
+
+@if(isAdminOrEmployee && Model.Any()){
+    var user = Model.First().User;
+    <h2>Książki użytkownika <span class="text-capitalize">@user.FirstName.FirstName @user.Surname.Surname</span></h2>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -51,36 +60,56 @@
             </td>
             <td>
                 @{
-                    if(
-                        item.Status == (int) BookStatus.Ordered ||
-                        item.Status == (int) BookStatus.ReadyToPickUp
-                    )
+                    if(User.IsInRole("Client"))
                     {
-                        
-                        <form 
-                            method="POST"
-                            asp-action="Cancel"
-                            asp-route-userId="@item.UserId"
-                        >
-                            <input type="hidden" asp-route-id="@item.RentalTransactionId" />
-                            <input type="submit" value="Anuluj"/>
-                        </form>
-                    }
-                        
+                        if
+                        (
+                            item.Status == (int) BookStatus.Ordered ||
+                            item.Status == (int) BookStatus.ReadyToPickUp
+                        )
+                        {
+                            <form 
+                                method="POST"
+                                asp-action="Cancel"
+                                asp-route-userId="@item.UserId"
+                            >
+                                <input type="hidden" asp-route-id="@item.RentalTransactionId" />
+                                <input class="btn btn-danger" type="submit" value="Anuluj" />
+                            </form>
+                        }
 
-                    if(item.Status == (int) BookStatus.PickedUp)
-                        @Html.Raw("Prolong term ");
-                        
-                    if(User.IsInRole("Client")){
-                        @Html.ActionLink("Opis", "Details", new { /* id=item.PrimaryKey */ });
+                        if(item.Status == (int) BookStatus.PickedUp)
+                        {
+                            <form
+                                method="POST"
+                                asp-action="ProlongTerm"
+                                asp-route-userId="@item.UserId"
+                            >
+                                <input type="hidden" asp-route-id="@item.RentalTransactionId" />
+                                <input 
+                                    class="btn btn-success" 
+                                    type="submit" 
+                                    value="Przedłuż" 
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Przedłuż wypożyczenie o 1 miesiąc."
+                                />
+                            </form>
+                        }
+                            
                     }
 
                     if (isAdminOrEmployee)
                     {
-                        @Html.ActionLink("Edytuj", "Edit", new { /* id=item.PrimaryKey */ }) @Html.Raw(" | ")
-                        @Html.ActionLink("Opis", "Details", new { /* id=item.PrimaryKey */ }); @Html.Raw(" | ");
-                        @Html.ActionLink("Usuń", "Delete", new { /* id=item.PrimaryKey */ });
+                        @Html.ActionLink("Edytuj", "Edit", new { id = item.RentalTransactionId }) @Html.Raw(" | ")
                     }
+                        
+                    @Html.ActionLink("Opis", "Details", new { id = item.RentalTransactionId, userId = item.UserId }); 
+                    if (isAdminOrEmployee)
+                    {
+                        @Html.Raw(" | "); @Html.ActionLink("Usuń", "Delete", new { id = item.RentalTransactionId });
+                    }
+                        
                         
                 }
             </td>
