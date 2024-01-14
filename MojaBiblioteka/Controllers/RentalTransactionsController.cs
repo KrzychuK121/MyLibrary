@@ -73,13 +73,28 @@ namespace MojaBiblioteka.Controllers
                 return NotFound();
 
             var loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId != loggedUserId && User.IsInRole("Client"))
-                userId = loggedUserId;
 
-            var rentalTransactionList = await GetRentalTransactionsLINQ(indexRentTransList)
+            var rentalTransactionLINQBase = GetRentalTransactionsLINQ(indexRentTransList)
                 .AsNoTracking()
-                .OrderBy(rt => rt.DueDate)
-                .Where(rt => rt.UserId.Equals(userId))
+                .OrderBy(rt => rt.DueDate);
+
+            var rentalTransactionLINQ = rentalTransactionLINQBase
+                    .Where(rt => rt.UserId.Equals(userId));
+
+            if (User.IsInRole("Client"))
+            {
+                if(userId != loggedUserId)
+                    userId = loggedUserId;
+                rentalTransactionLINQ = rentalTransactionLINQBase
+                    .Where(
+                        rt => rt.UserId.Equals(userId) &&
+                        rt.Status != (int) BookStatus.Cancelled &&
+                        rt.Status != (int) BookStatus.Returned &&
+                        rt.Status != (int) BookStatus.Closed
+                    );
+            }
+
+            var rentalTransactionList = await rentalTransactionLINQ
                 .ToListAsync();
 
             return View(rentalTransactionList);
@@ -183,10 +198,68 @@ namespace MojaBiblioteka.Controllers
                 return NotFound();
 
             rentalTransactionToUpdate.Status = (int) BookStatus.Cancelled;
-            
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                _context.Update(rentalTransactionToUpdate);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!RentalTransactionExists(rentalTransactionToUpdate.RentalTransactionId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return RedirectToAction(nameof(IndexUser), new {userId = userId});
+        }
+
+        // POST: RentalTransactions/ProlongTerm/5/
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProlongTerm(int id)
+        {
+            var loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var rentalTransactionToUpdate = await _context.RentalTransactionList
+                .FirstOrDefaultAsync(rt => rt.RentalTransactionId == id);
+
+            if(rentalTransactionToUpdate.UserId != loggedUserId)
+                return NotFound();
+
+            if(rentalTransactionToUpdate.ProlongTermCounter == 0)
+            {
+                TempData["message"] = "Nie masz już możliwości przedłużenia terminu oddania.";
+                TempData["type"] = Types.Error;
+                return RedirectToAction(nameof(IndexUser), new { userId = loggedUserId });
+            }
+
+            rentalTransactionToUpdate.DueDate.AddMonths(1);
+            rentalTransactionToUpdate.ProlongTermCounter--;
+
+            try
+            {
+                _context.Update(rentalTransactionToUpdate);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!RentalTransactionExists(rentalTransactionToUpdate.RentalTransactionId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(IndexUser), new { userId = loggedUserId});
         }
 
         // GET: RentalTransactions/Edit/5
