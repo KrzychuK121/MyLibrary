@@ -1,28 +1,83 @@
-﻿@model MojaBiblioteka.Models.Entities.Connector.RentalTransaction
+﻿@using MojaBiblioteka.Models.ViewModels.Connector;
+@model MojaBiblioteka.Models.Entities.Connector.RentalTransaction
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "O transakcji wypożyczenia";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var isAdminOrEmployee = User.IsInRole("Admin") || User.IsInRole("Employee");
+    var counterAuthors = 1;
 }
 
-<h1>Details</h1>
+<h1>Opis</h1>
 
 <div>
-    <h4>RentalTransaction</h4>
+    <h4>Transakcja wypożyczenia</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Book)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Book.Isbn)
+            <b>@Html.DisplayNameFor(model => model.Book.Isbn):</b> @Html.DisplayFor(model => model.Book.Isbn)<br />
+            <b>@Html.DisplayNameFor(model => model.Book.Title):</b> @Html.DisplayFor(model => model.Book.Title)<br />
+            <b>@Html.DisplayNameFor(model => model.Book.BookAuthor):</b>
+                @if (Model.Book.BookAuthor is null || Model.Book.BookAuthor.Count() == 0)
+                {
+                    @:Brak
+                }
+
+                @foreach (var bAuthor in Model.Book.BookAuthor)
+                {
+
+                    string? dateToDisplay = bAuthor.Author.DateOfBirth is null ?
+                    "" :
+                    ", " + bAuthor.Author.DateOfBirth.ToString().Split(' ')[0];
+                    <span class="text-capitalize">
+                        @Html.Encode(
+                            bAuthor.Author.FirstName.FirstName + " " +
+                            bAuthor.Author.Surname.Surname +
+                            dateToDisplay
+                        )
+                    </span>
+                    
+                    @Html.Raw(counterAuthors++ == Model.Book.BookAuthor.Count() ? "" : ", ")
+                }
+            <br />
+            <b>@Html.DisplayNameFor(model => model.Book.Publisher):</b> @Html.DisplayFor(model => model.Book.Publisher.Name)<br />
+            <b>@Html.DisplayNameFor(model => model.Book.BookCategory):</b>
+                @{
+                    // which element in loop
+                    var counterCategories = 1;
+
+                    if (Model.Book.BookCategory is null || Model.Book.BookCategory.Count() == 0)
+                        @Html.Raw("Brak");
+
+                    foreach (var bCategory in Model.Book.BookCategory)
+                    {
+                        @bCategory.Category.Name @(counterCategories == Model.Book.BookCategory.Count() ? "" : ", ");
+                        counterCategories++;
+                    }
+                }
+            <br />
+            <b>@Html.DisplayNameFor(model => model.Book.ReleaseDate):</b> @Html.DisplayFor(model => model.Book.ReleaseDate)<br />
+            <b>@Html.DisplayNameFor(model => model.Book.Amount):</b> @Html.DisplayFor(model => model.Book.Amount)<br />
+            <!--Koniec książki-->
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
-        </dd>
+        @if (isAdminOrEmployee)
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.User)
+            </dt>
+            <dd class="col-sm-10">
+                <p>
+                    <b>@Html.DisplayNameFor(model => model.UserId):</b> @Model.UserId <br />
+                    <b>Imię i nazwisko:</b> <span class="text-capitalize">@Model.User.FirstName.FirstName @Model.User.Surname.Surname</span><br />
+                    <b>Kontakt:</b><br />
+                    <b>Nr. tel:</b> @Html.Raw(Model.User.PhoneNumber == null ? "brak" : Model.User.PhoneNumber);<br />
+                    <b>@Html.DisplayNameFor(model => model.User.Email):</b> @Model.User.Email<br />
+                </p>
+            </dd>
+        }
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.RentalDate)
         </dt>
@@ -45,11 +100,19 @@
             @Html.DisplayNameFor(model => model.Status)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
+            @RentalTransactionsVM.GetStatusText(Model.Status)
         </dd>
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
+    @Html.ActionLink("Edytuj", "Edit", new { id = Model.RentalTransactionId }) |
+    @if(ViewData["userId"] == null)
+    {
+        <a asp-action="Index">Powrót do listy</a>
+    }
+    else
+    {
+        <a asp-action="IndexUser" asp-route-userId="@ViewData["userId"]">Powrót do listy</a>
+    }
+
 </div>
