@@ -18,6 +18,7 @@ using MojaBiblioteka.Models.ViewModels.Messages;
 
 namespace MojaBiblioteka.Controllers
 {
+    [Authorize(Roles = "Admin, Employee, Client")]
     public class RentalTransactionsController : Controller
     {
         private readonly MyLibraryContext _context;
@@ -66,7 +67,6 @@ namespace MojaBiblioteka.Controllers
         }
 
         // GET: RentalTransactions/Index?userId
-        [Authorize(Roles = "Admin, Employee, Client")]
         public async Task<IActionResult> IndexUser(string userId)
         {
             if (TempData["message"] != null)
@@ -195,6 +195,7 @@ namespace MojaBiblioteka.Controllers
         // POST: RentalTransactions/Cancel/5/
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> Cancel(int id, string userId)
         {
             var rentalTransactionToUpdate = await _context.RentalTransactionList
@@ -231,6 +232,7 @@ namespace MojaBiblioteka.Controllers
         // POST: RentalTransactions/ProlongTerm/5/
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> ProlongTerm(int id)
         {
             var loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -272,6 +274,7 @@ namespace MojaBiblioteka.Controllers
         }
 
         // GET: RentalTransactions/Edit/5
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Edit(int id, string? userId)
         {
             ViewData[nameof(userId)] = userId;
@@ -298,6 +301,7 @@ namespace MojaBiblioteka.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Edit
         (
             int id, 
@@ -344,6 +348,7 @@ namespace MojaBiblioteka.Controllers
         }
 
         // GET: RentalTransactions/Delete/5
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Delete(int id, string? userId)
         {
             ViewData[nameof(userId)] = userId;
@@ -366,6 +371,7 @@ namespace MojaBiblioteka.Controllers
         // POST: RentalTransactions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> DeleteConfirmed(int id, string? userId)
         {
             if (_context.RentalTransactionList == null)
