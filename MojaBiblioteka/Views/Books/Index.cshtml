@@ -12,7 +12,7 @@
 }
 
 <h1>Spis</h1>
-@Html.Partial("../Connector/_AlertMessage", mess)
+@await Html.PartialAsync("../Connector/_AlertMessage", mess)
 <p>
     @if (
         Context.User.IsInRole("Admin") ||
