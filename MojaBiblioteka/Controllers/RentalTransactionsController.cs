@@ -88,7 +88,8 @@ namespace MojaBiblioteka.Controllers
         // GET: RentalTransactions/Details/5
         public async Task<IActionResult> Details(int id, string? userId)
         {
-            ViewData["userId"] = userId;
+            ViewData[nameof(userId)] = userId;
+
             if (id == null || _context.RentalTransactionList == null)
             {
                 return NotFound();
@@ -189,20 +190,24 @@ namespace MojaBiblioteka.Controllers
         }
 
         // GET: RentalTransactions/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, string? userId)
         {
+            ViewData[nameof(userId)] = userId;
+
             if (id == null || _context.RentalTransactionList == null)
             {
                 return NotFound();
             }
 
-            var rentalTransaction = await _context.RentalTransactionList.FindAsync(id);
+            var rentalTransaction = await GetRentalTransactionsLINQ(detailsRentTransList)
+                .FirstOrDefaultAsync(rt => rt.RentalTransactionId == id);
+
             if (rentalTransaction == null)
             {
                 return NotFound();
             }
-            ViewData["BookIsbn"] = new SelectList(_context.Books, "Isbn", "Isbn", rentalTransaction.BookIsbn);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", rentalTransaction.UserId);
+
+            StatusDropdown(rentalTransaction.Status);
             return View(rentalTransaction);
         }
 
@@ -211,13 +216,21 @@ namespace MojaBiblioteka.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RentalTransactionId,BookIsbn,UserId,RentalDate,DueDate,ProlongTermCounter,Status")] RentalTransaction rentalTransaction)
+        public async Task<IActionResult> Edit
+        (
+            int id, 
+            [Bind("RentalTransactionId,BookIsbn,UserId,RentalDate,DueDate,ProlongTermCounter,Status")] RentalTransaction rentalTransaction, 
+            string? userIdPath
+        )
         {
+            Console.WriteLine("\n" + userIdPath ?? "null" + "\n");
+
             if (id != rentalTransaction.RentalTransactionId)
             {
                 return NotFound();
             }
 
+            ModelState.Clear();
             if (ModelState.IsValid)
             {
                 try
@@ -236,16 +249,23 @@ namespace MojaBiblioteka.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+                //Console.WriteLine("\nViewData: " + (ViewData[nameof(userId)] == null ? "null" : ViewData[nameof(userId)]) + "\n");
+
+                if (userIdPath == null)
+                    return RedirectToAction(nameof(Index));
+                else
+                    return RedirectToAction(nameof(IndexUser), new { userId = userIdPath });
             }
-            ViewData["BookIsbn"] = new SelectList(_context.Books, "Isbn", "Isbn", rentalTransaction.BookIsbn);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", rentalTransaction.UserId);
+            StatusDropdown(rentalTransaction.Status);
             return View(rentalTransaction);
         }
 
         // GET: RentalTransactions/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, string? userId)
         {
+            ViewData[nameof(userId)] = userId;
+
             if (id == null || _context.RentalTransactionList == null)
             {
                 return NotFound();
@@ -264,7 +284,7 @@ namespace MojaBiblioteka.Controllers
         // POST: RentalTransactions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, string? userId)
         {
             if (_context.RentalTransactionList == null)
             {
@@ -277,7 +297,10 @@ namespace MojaBiblioteka.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (userId == null)
+                return RedirectToAction(nameof(Index));
+            else
+                return RedirectToAction(nameof(IndexUser), new { userId = userId });
         }
 
         private bool RentalTransactionExists(int id)
@@ -297,6 +320,26 @@ namespace MojaBiblioteka.Controllers
                         .ThenInclude(u => u.Surname);
 
             return rentalTransactionLINQ;
+        }
+
+        private void StatusDropdown(object selected = null)
+        {
+            // var status;
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+
+            var bookStatusCount = Enum.GetNames(typeof(BookStatus)).Length;
+
+            for (var i = 0; i < bookStatusCount; i++)
+            {
+                selectListItems.Add(new SelectListItem 
+                    { 
+                        Text = RentalTransactionsVM.GetStatusText(i), 
+                        Value = i.ToString()
+                    }
+                );
+            }
+
+            ViewBag.Status = new SelectList(selectListItems, "Value", "Text", selected);
         }
     }
 }
