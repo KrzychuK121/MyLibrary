@@ -10,6 +10,10 @@
     var counter = 0;
 }
 
+@section Styles {
+    <link href="/css/RentalTransactionsIndex.css" rel="stylesheet" type="text/css" />
+}
+
 <h1>Spis</h1>
 
 
@@ -26,7 +30,14 @@
         }
         @:<div class="row">
             currUserId = item.UserId;
-            @:<h2>Książki użytkownika @item.User.FirstName.FirstName @item.User.Surname.Surname</h2>
+            <a 
+                class="nav-link text-dark descLink" 
+                asp-controller="RentalTransactions" 
+                asp-action="IndexUser"
+                asp-route-userId="@item.UserId"
+            >
+                <h2>Książki użytkownika <span class="text-capitalize">@item.User.FirstName.FirstName @item.User.Surname.Surname</span></h2>
+            </a>
             @:<hr>
             @:<table class="table">
                 @:<thead>
