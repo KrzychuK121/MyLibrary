@@ -309,12 +309,29 @@ namespace MojaBiblioteka.Controllers
             string? userIdPath
         )
         {
-            Console.WriteLine("\n" + userIdPath ?? "null" + "\n");
-
             if (id != rentalTransaction.RentalTransactionId)
             {
                 return NotFound();
             }
+
+            var previousStatus = await _context.RentalTransactionList
+                .Where(rt => rt.RentalTransactionId == id)
+                .Select(rt => rt.Status)
+                .SingleOrDefaultAsync();
+
+            // Need testing
+            if(
+                previousStatus != null &&
+                ifTransactionInProggress(previousStatus) &&
+                !ifTransactionInProggress(rentalTransaction.Status)
+            )
+            {
+                rentalTransaction.Book = await _context.Books
+                    .SingleOrDefaultAsync(b => b.Isbn == rentalTransaction.BookIsbn);
+
+                rentalTransaction.Book.Amount++;
+            }
+                
 
             ModelState.Clear();
             if (ModelState.IsValid)
@@ -335,8 +352,6 @@ namespace MojaBiblioteka.Controllers
                         throw;
                     }
                 }
-
-                //Console.WriteLine("\nViewData: " + (ViewData[nameof(userId)] == null ? "null" : ViewData[nameof(userId)]) + "\n");
 
                 if (userIdPath == null)
                     return RedirectToAction(nameof(Index));
@@ -408,6 +423,18 @@ namespace MojaBiblioteka.Controllers
                         .ThenInclude(u => u.Surname);
 
             return rentalTransactionLINQ;
+        }
+
+        // Return true when status is canceled, returned or closeed. Otherwise it returns false
+        private bool ifTransactionInProggress(int status)
+        {
+            var bookStatusCount = Enum.GetNames(typeof(BookStatus)).Length;
+            if (status >= bookStatusCount || status < 0)
+                throw new ArgumentOutOfRangeException();
+
+            return status != (int)BookStatus.Cancelled &&
+                   status != (int)BookStatus.Returned &&
+                   status != (int)BookStatus.Closed;
         }
 
         private void StatusDropdown(object selected = null)
