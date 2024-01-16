@@ -26,7 +26,7 @@ namespace MojaBiblioteka.Models.Entities.Connector
         [Description("How many times can User prolong the term of the book return. Going from 3 to 0")]
         public int ProlongTermCounter { get; set; } = 3;
         [Required]
-        public int Status { get; set; } = (int)BookStatus.Ordered; // BookStatus here
+        public int Status { get; set; } = (int) BookStatus.Ordered; // BookStatus here
 
     }
 
