@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MojaBiblioteka.Data;
+using MojaBiblioteka.Data.Seeds;
 using MojaBiblioteka.Models.Entities.Persons;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,9 +26,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     // Enable database initialization
-    //SeedAuthorData.Initialize(services);
-    // Enable users' roles initialization
-    //SeedRoles.Initialize(services);
+    SeedDatabase databaseSeeder = new SeedDatabase(services);
+    databaseSeeder.Initialize();
 }
 
 // Configure the HTTP request pipeline.
