@@ -24,9 +24,6 @@ namespace MojaBiblioteka.Data
                     new Name { FirstName = "marta" }
                 };
 
-                Console.WriteLine("Dlugosc Names: " + Names.Length);
-
-                //context.Name.AddRange(Names);
                 foreach(Name name in Names)
                 {
                     context.Names.Add(name);
@@ -42,9 +39,6 @@ namespace MojaBiblioteka.Data
                     new LastName { Surname = "skowronek" }
                 };
 
-                Console.WriteLine("Dlugosc LastNames: " + LastNames.Length);
-
-                //context.LastName.AddRange(LastNames);
                 foreach (LastName lastName in LastNames)
                 {
                     context.LastNames.Add(lastName);
