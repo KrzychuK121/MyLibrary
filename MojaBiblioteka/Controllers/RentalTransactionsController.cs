@@ -207,7 +207,10 @@ namespace MojaBiblioteka.Controllers
             if (!rentalTransactionToUpdate.UserId.Equals(userId))
                 return NotFound();
 
+            int previousStatus = rentalTransactionToUpdate.Status;
             rentalTransactionToUpdate.Status = (int) BookStatus.Cancelled;
+
+            bool ifSucceeded = FreeBook(previousStatus, rentalTransactionToUpdate.Status, rentalTransactionToUpdate);
 
             try
             {
@@ -319,19 +322,7 @@ namespace MojaBiblioteka.Controllers
                 .Select(rt => rt.Status)
                 .SingleOrDefaultAsync();
 
-            // Need testing
-            if(
-                previousStatus != null &&
-                ifTransactionInProggress(previousStatus) &&
-                !ifTransactionInProggress(rentalTransaction.Status)
-            )
-            {
-                rentalTransaction.Book = await _context.Books
-                    .SingleOrDefaultAsync(b => b.Isbn == rentalTransaction.BookIsbn);
-
-                rentalTransaction.Book.Amount++;
-            }
-                
+            bool ifSucceeded = FreeBook(previousStatus, rentalTransaction.Status, rentalTransaction);                
 
             ModelState.Clear();
             if (ModelState.IsValid)
@@ -425,8 +416,27 @@ namespace MojaBiblioteka.Controllers
             return rentalTransactionLINQ;
         }
 
+        // Rental transaction book amount++ if available now.
+        private bool FreeBook(int previousStatus, int newStatus, RentalTransaction editedTransaction)
+        {
+            if
+            (
+                previousStatus != null &&
+                IfTransactionInProggress(previousStatus) &&
+                !IfTransactionInProggress(newStatus)
+            )
+            {
+                editedTransaction.Book = _context.Books
+                    .SingleOrDefault(b => b.Isbn == editedTransaction.BookIsbn);
+
+                editedTransaction.Book.Amount++;
+                return true;
+            }
+            return false;
+        }
+
         // Return true when status is canceled, returned or closeed. Otherwise it returns false
-        private bool ifTransactionInProggress(int status)
+        private bool IfTransactionInProggress(int status)
         {
             var bookStatusCount = Enum.GetNames(typeof(BookStatus)).Length;
             if (status >= bookStatusCount || status < 0)
