@@ -12,7 +12,7 @@ namespace MojaBiblioteka.Data.Seeds
     {
         private readonly MyLibraryContext context;
         private readonly RoleManager<IdentityRole> roleManager;
-        private readonly IPasswordHasher<User> passwordHasher;
+        private readonly UserManager<User> userManager;
 
         public SeedDatabase(IServiceProvider serviceProvider)
         {
@@ -29,9 +29,9 @@ namespace MojaBiblioteka.Data.Seeds
                     RoleManager<IdentityRole>
                 >();
 
-            passwordHasher = serviceProvider.GetRequiredService
+            userManager = serviceProvider.GetRequiredService
                 <
-                    PasswordHasher<User>
+                    UserManager<User>
                 >();
         }
 
@@ -47,7 +47,7 @@ namespace MojaBiblioteka.Data.Seeds
 
             var Publishers = new Publisher[]
                 {
-                    new Publisher { Name = "Wyd.Artystyczne GCE 2017" },
+                    new Publisher { Name = "Wyd. Artystyczne GCE 2017" },
                     new Publisher { Name = "GREG" },
                     new Publisher { Name = "\"G&P\" ; [Warszawa] : Porozumienie Wydawców, 2003" }
                 };
@@ -351,7 +351,7 @@ namespace MojaBiblioteka.Data.Seeds
                     new BookAuthor
                     {
                         Book = context.Books.Single(b => b.Isbn.Equals("97883732718381234")),
-                        Author = context.Authors.Single
+                        Author = context.Authors.Include(a => a.FirstName).Include(a => a.Surname).Single
                             (
                                 a => a.FirstName.FirstName.Equals("adam") &&
                                 a.Surname.Surname.Equals("mickiewicz")
@@ -360,7 +360,7 @@ namespace MojaBiblioteka.Data.Seeds
                     new BookAuthor
                     {
                         Book = context.Books.Single(b => b.Isbn.Equals("97883926478501234")),
-                        Author = context.Authors.Single
+                        Author = context.Authors.Include(a => a.FirstName).Include(a => a.Surname).Single
                             (
                                 a => a.FirstName.FirstName.Equals("henryk") &&
                                 a.Surname.Surname.Equals("sienkiewicz")
@@ -369,7 +369,7 @@ namespace MojaBiblioteka.Data.Seeds
                     new BookAuthor
                     {
                         Book = context.Books.Single(b => b.Isbn.Equals("83759682765692392")),
-                        Author = context.Authors.Single
+                        Author = context.Authors.Include(a => a.FirstName).Include(a => a.Surname).Single
                             (
                                 a => a.FirstName.FirstName.Equals("jan") &&
                                 a.Surname.Surname.Equals("brzechwa")
@@ -378,7 +378,7 @@ namespace MojaBiblioteka.Data.Seeds
                     new BookAuthor
                     {
                         Book = context.Books.Single(b => b.Isbn.Equals("83759682765692392")),
-                        Author = context.Authors.Single
+                        Author = context.Authors.Include(a => a.FirstName).Include(a => a.Surname).Single
                             (
                                 a => a.FirstName.FirstName.Equals("jan") &&
                                 a.Surname.Surname.Equals("szancer")
@@ -499,8 +499,8 @@ namespace MojaBiblioteka.Data.Seeds
                 Users[i].NormalizedUserName = Emails[i].ToUpper();
                 Users[i].NormalizedEmail = Emails[i].ToUpper();
                 Users[i].EmailConfirmed = true;
-                passwordHasher.HashPassword(Users[i], Passwords[i]);
 
+                var result = userManager.CreateAsync(Users[i], Passwords[i]);
                 context.Add(Users[i]);
             }
 
