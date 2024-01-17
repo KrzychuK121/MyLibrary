@@ -179,15 +179,15 @@ namespace MojaBiblioteka.Controllers
           return (_context.Authors?.Any(e => e.AuthorId == id)).GetValueOrDefault();
         }
 
-        private async void SetAuthorsProperties(Author author)
+        private void SetAuthorsProperties(Author author)
         {
-            var Name = await _context.Names
+            var Name = _context.Names
                 .Where(n => n.FirstName == author.FirstName.FirstName)
-                .SingleOrDefaultAsync();
+                .SingleOrDefault();
 
-            var Surname = await _context.LastNames
+            var Surname = _context.LastNames
                 .Where(l => l.Surname == author.Surname.Surname)
-                .SingleOrDefaultAsync();
+                .SingleOrDefault();
 
             if (Name != null)
                 author.FirstName = Name;
