@@ -39,7 +39,7 @@ namespace MojaBiblioteka.Data.Seeds
 
         public void SeedPublishers()
         {
-            Console.WriteLine("\n------SeedPublishers()------");
+            Console.WriteLine("\n------SeedPublishers()------\n");
 
             if (context.Publishers.Any())
             {
@@ -56,17 +56,17 @@ namespace MojaBiblioteka.Data.Seeds
 
             foreach (Publisher publisher in Publishers)
             {
-                Console.WriteLine($"\nCreating publisher { publisher.Name }\n");
+                Console.WriteLine($"Creating publisher { publisher.Name }");
                 context.Add(publisher);
             }
 
             context.SaveChanges();
-            Console.WriteLine("----------------------------\n");
+            Console.WriteLine("\n----------------------------\n");
         }
 
         public void SeedCategories()
         {
-            Console.WriteLine("\n------SeedCategories()------");
+            Console.WriteLine("\n------SeedCategories()------\n");
 
             if(context.Categories.Any()) 
             {
@@ -83,17 +83,17 @@ namespace MojaBiblioteka.Data.Seeds
 
             foreach(var category in Categories)
             {
-                Console.WriteLine($"\nCreating category { category.Name }\n");
+                Console.WriteLine($"Creating category { category.Name }");
                 context.Add(category);
             }
 
             context.SaveChanges();
-            Console.WriteLine("----------------------------\n");
+            Console.WriteLine("\n----------------------------\n");
         }
 
         public void SeedNames() 
         {
-            Console.WriteLine("\n------SeedNames()------");
+            Console.WriteLine("\n------SeedNames()------\n");
             if (context.Names.Any())
             {
                 Console.WriteLine("\nNo names created.\n");
@@ -114,18 +114,18 @@ namespace MojaBiblioteka.Data.Seeds
 
             foreach(var name in Names)
             {
-                Console.WriteLine($"\nCreating name { name.FirstName }\n");
+                Console.WriteLine($"Creating name { name.FirstName }");
                 context.Add(name);
             }
 
             context.SaveChanges();
-            Console.WriteLine("-----------------------\n");
+            Console.WriteLine("\n-----------------------\n");
 
         }
 
         public void SeedLastNames()
         {
-            Console.WriteLine("\n------SeedLastNames()------");
+            Console.WriteLine("\n------SeedLastNames()------\n");
             if (context.LastNames.Any())
             {
                 Console.WriteLine("\nNo lastNames created.\n");
@@ -147,18 +147,18 @@ namespace MojaBiblioteka.Data.Seeds
 
             foreach (var lastName in LastNames)
             {
-                Console.WriteLine($"\nCreating lastName { lastName.Surname }\n");
+                Console.WriteLine($"Creating lastName { lastName.Surname }");
                 context.Add(lastName);
             }
 
             context.SaveChanges();
-            Console.WriteLine("---------------------------\n");
+            Console.WriteLine("\n---------------------------\n");
 
         }
 
         public void SeedAuthors()
         {
-            Console.WriteLine("\n------SeedAuthors()------");
+            Console.WriteLine("\n------SeedAuthors()------\n");
             if (context.Authors.Any())
             {
                 Console.WriteLine("\nNo authors created.\n");
@@ -207,17 +207,17 @@ namespace MojaBiblioteka.Data.Seeds
 
             foreach (var author in Authors)
             {
-                Console.WriteLine($"\nCreating author { author.FirstName.FirstName } { author.Surname.Surname }\n");
+                Console.WriteLine($"Creating author { author.FirstName.FirstName } { author.Surname.Surname }");
                 context.Add(author);
             }
 
             context.SaveChanges();
-            Console.WriteLine("-------------------------\n");
+            Console.WriteLine("\n-------------------------\n");
         }
 
         public void SeedBooks()
         {
-            Console.WriteLine("\n------SeedBooks()------");
+            Console.WriteLine("\n------SeedBooks()------\n");
             if (context.Books.Any())
             {
                 Console.WriteLine("\nNo books created.\n");
@@ -261,18 +261,18 @@ namespace MojaBiblioteka.Data.Seeds
 
             foreach (var book in Books)
             {
-                Console.WriteLine($"\nCreating book { book.Isbn }: { book.Title }\n");
+                Console.WriteLine($"Creating book { book.Isbn }: { book.Title }");
                 context.Add(book);
             }
 
             context.SaveChanges();
 
-            Console.WriteLine("-----------------------\n");
+            Console.WriteLine("\n-----------------------\n");
         }
 
         public void SeedBooksCategories()
         {
-            Console.WriteLine("\n------SeedBooksCategories()------");
+            Console.WriteLine("\n------SeedBooksCategories()------\n");
             if (context.BooksCategories.Any())
             {
                 Console.WriteLine("\nNo booksCategories created.\n");
@@ -318,18 +318,18 @@ namespace MojaBiblioteka.Data.Seeds
 
             foreach (var bookCategory in BooksCategories)
             {
-                Console.WriteLine($"\nCreating booksCategories { bookCategory.Book.Title }: { bookCategory.Category.Name }\n");
+                Console.WriteLine($"Creating booksCategories { bookCategory.Book.Title }: { bookCategory.Category.Name }");
                 context.Add(bookCategory);
             }
 
             context.SaveChanges();
 
-            Console.WriteLine("---------------------------------\n");
+            Console.WriteLine("\n---------------------------------\n");
         }
 
         public void SeedBooksAuthors()
         {
-            Console.WriteLine("\n------SeedBooksAuthors()------");
+            Console.WriteLine("\n------SeedBooksAuthors()------\n");
             if (context.BooksAuthors.Any())
             {
                 Console.WriteLine("\nNo booksAuthors created.\n");
@@ -391,14 +391,14 @@ namespace MojaBiblioteka.Data.Seeds
 
             foreach (var bookAuthor in BooksAuthors)
             {
-                Console.WriteLine($"\nCreating booksAuthors { bookAuthor.Book.Title }: " +
-                    $"{ bookAuthor.Author.FirstName.FirstName } { bookAuthor.Author.Surname.Surname }\n");
+                Console.WriteLine($"Creating booksAuthors { bookAuthor.Book.Title }: " +
+                    $"{ bookAuthor.Author.FirstName.FirstName } { bookAuthor.Author.Surname.Surname }");
                 context.Add(bookAuthor);
             }
 
             context.SaveChanges();
 
-            Console.WriteLine("------------------------------\n");
+            Console.WriteLine("\n------------------------------\n");
         }
 
         public void SeedRoles()
@@ -407,7 +407,7 @@ namespace MojaBiblioteka.Data.Seeds
 
             string[] roles = { "Admin", "Employee", "Client" };
 
-            Console.WriteLine("\n------SeedRoles()------");
+            Console.WriteLine("\n------SeedRoles()------\n");
 
             foreach (var role in roles)
             {
@@ -416,7 +416,7 @@ namespace MojaBiblioteka.Data.Seeds
                     continue;
 
                 ifRolesCreated = true;
-                Console.WriteLine($"\nCreating role { role }\n");
+                Console.WriteLine($"Creating role { role }");
 
                 var identityRole = new IdentityRole(role);
                 var result = roleManager.CreateAsync(identityRole).Result;
@@ -426,12 +426,12 @@ namespace MojaBiblioteka.Data.Seeds
             }
             if (!ifRolesCreated)
                 Console.WriteLine("\nNo roles created.\n");
-            Console.WriteLine("-----------------------\n");
+            Console.WriteLine("\n-----------------------\n");
         }
 
         public void SeedUsers()
         {
-            Console.WriteLine("\n------SeedUsers()------");
+            Console.WriteLine("\n------SeedUsers()------\n");
             if (context.Users.Any())
             {
                 Console.WriteLine("\nNo users created.\n");
@@ -500,7 +500,7 @@ namespace MojaBiblioteka.Data.Seeds
 
             for (var i = 0; i < Users.Length; i++)
             {
-                Console.WriteLine($"\nCreating user { Users[i].FirstName.FirstName } { Users[i].Surname.LastNameId }\n");
+                Console.WriteLine($"Creating user { Users[i].FirstName.FirstName } { Users[i].Surname.LastNameId }");
 
                 Users[i].UserName = Emails[i];
                 Users[i].Email = Emails[i];
@@ -514,12 +514,12 @@ namespace MojaBiblioteka.Data.Seeds
 
             context.SaveChanges();
 
-            Console.WriteLine("-----------------------\n");
+            Console.WriteLine("\n-----------------------\n");
         }
 
         public void SeedUsersRoles()
         {
-            Console.WriteLine("\n------SeedUsersRoles()------");
+            Console.WriteLine("\n------SeedUsersRoles()------\n");
             if (context.UserRoles.Any())
             {
                 Console.WriteLine("\nNo usersRoles created.\n");
@@ -570,18 +570,18 @@ namespace MojaBiblioteka.Data.Seeds
 
             foreach(var userRole in UsersRoles)
             {
-                Console.WriteLine($"\nCreating userRole { userRole.UserId } : { userRole.RoleId }\n");
+                Console.WriteLine($"Creating userRole { userRole.UserId } : { userRole.RoleId }");
                 context.Add(userRole);
             }
 
             context.SaveChanges();
 
-            Console.WriteLine("----------------------------\n");
+            Console.WriteLine("\n----------------------------\n");
         }
 
         public void SeedRentalTransactions()
         {
-            Console.WriteLine("\n------SeedRentalTransactions()------");
+            Console.WriteLine("\n------SeedRentalTransactions()------\n");
             if (context.RentalTransactionList.Any())
             {
                 Console.WriteLine("\nNo rentalTransactions created.\n");
@@ -622,13 +622,13 @@ namespace MojaBiblioteka.Data.Seeds
 
             foreach (var rentalTransaction in RentalTransactions)
             {
-                Console.WriteLine($"\nCreating rentalTransaction { rentalTransaction.Book.Title } : { rentalTransaction.User.UserName }\n");
+                Console.WriteLine($"Creating rentalTransaction { rentalTransaction.Book.Title } : { rentalTransaction.User.UserName }");
                 context.Add(rentalTransaction);
             }
 
             context.SaveChanges();
 
-            Console.WriteLine("------------------------------------\n");
+            Console.WriteLine("\n------------------------------------\n");
         }
 
         public void Initialize()
