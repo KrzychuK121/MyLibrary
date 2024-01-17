@@ -15,6 +15,8 @@ builder.Services.AddDefaultIdentity<User>(
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<MyLibraryContext>();
 
+builder.Services.AddScoped<PasswordHasher<User>>();
+
 builder.Services.AddRazorPages();
 // Add services to the container.
 builder.Services.AddControllersWithViews();

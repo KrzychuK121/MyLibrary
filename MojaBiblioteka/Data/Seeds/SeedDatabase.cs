@@ -12,7 +12,7 @@ namespace MojaBiblioteka.Data.Seeds
     {
         private readonly MyLibraryContext context;
         private readonly RoleManager<IdentityRole> roleManager;
-        private readonly UserManager<User> userManager;
+        private readonly PasswordHasher<User> passwordHasher;
 
         public SeedDatabase(IServiceProvider serviceProvider)
         {
@@ -29,9 +29,11 @@ namespace MojaBiblioteka.Data.Seeds
                     RoleManager<IdentityRole>
                 >();
 
-            userManager = serviceProvider.GetRequiredService
+
+
+            passwordHasher = serviceProvider.GetRequiredService
                 <
-                    UserManager<User>
+                    PasswordHasher<User>
                 >();
         }
 
@@ -436,10 +438,16 @@ namespace MojaBiblioteka.Data.Seeds
                 return;
             }
 
-            if (!context.Roles.Any())
+            if (!context.Names.Any())
             {
-                Console.WriteLine("\nNo roles. Using SeedRoles().\n");
-                SeedRoles();
+                Console.WriteLine("\nNo names. Using SeedNames().\n");
+                SeedNames();
+            }
+
+            if (!context.LastNames.Any())
+            {
+                Console.WriteLine("\nNo lastNames. Using SeedLastNames().\n");
+                SeedLastNames();
             }
 
             var Emails = new List<string>()
@@ -486,21 +494,21 @@ namespace MojaBiblioteka.Data.Seeds
                     {
                         FirstName = context.Names.Single(n => n.FirstName.Equals("klient3")),
                         Surname = context.LastNames.Single(ln => ln.Surname.Equals("klient3"))
-                    },
+                    }
 
                 };
 
             for (var i = 0; i < Users.Length; i++)
             {
-                Console.WriteLine($"\nCreating user { Users[i].FirstName.FirstName } { Users[i].Surname.Surname }\n");
+                Console.WriteLine($"\nCreating user { Users[i].FirstName.FirstName } { Users[i].Surname.LastNameId }\n");
 
                 Users[i].UserName = Emails[i];
                 Users[i].Email = Emails[i];
                 Users[i].NormalizedUserName = Emails[i].ToUpper();
                 Users[i].NormalizedEmail = Emails[i].ToUpper();
                 Users[i].EmailConfirmed = true;
+                Users[i].PasswordHash = passwordHasher.HashPassword(Users[i], Passwords[i]);
 
-                var result = userManager.CreateAsync(Users[i], Passwords[i]);
                 context.Add(Users[i]);
             }
 
