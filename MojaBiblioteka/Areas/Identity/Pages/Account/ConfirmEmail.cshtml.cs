@@ -18,10 +18,15 @@ namespace MojaBiblioteka.Areas.Identity.Pages.Account
     public class ConfirmEmailModel : PageModel
     {
         private readonly UserManager<User> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public ConfirmEmailModel(UserManager<User> userManager)
+        public ConfirmEmailModel(
+            UserManager<User> userManager,
+            IConfiguration configuration
+        )
         {
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -46,6 +51,28 @@ namespace MojaBiblioteka.Areas.Identity.Pages.Account
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, code);
             StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+            
+            if (!result.Succeeded)
+                return Page();
+
+            IDictionary<string, string> rolesEmails = new Dictionary<string, string>();
+            rolesEmails["Admin"] = _configuration["AdminEmail"] ?? string.Empty;
+            rolesEmails["Employee"] = _configuration["EmployeeEmail"] ?? string.Empty;
+
+            bool notMatchingAny = true;
+
+            foreach(var (role, email) in rolesEmails)
+            {
+                if (string.Compare(user.Email, email, true) == 0)
+                {   
+                    notMatchingAny = false;
+                    await _userManager.AddToRoleAsync(user, role);
+                }
+            }
+
+            if (notMatchingAny)
+                await _userManager.AddToRoleAsync(user, "Client");
+
             return Page();
         }
     }

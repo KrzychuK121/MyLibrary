@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MojaBiblioteka.Data;
+using MojaBiblioteka.Data.Seeds;
 using MojaBiblioteka.Models.Entities.Persons;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,9 +10,10 @@ builder.Services.AddDbContext<MyLibraryContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyLibraryContext") ?? throw new InvalidOperationException("Connection string 'MyLibraryContext' not found.")));
 
 builder.Services.AddDefaultIdentity<User>(
-        options => options.SignIn.RequireConfirmedAccount = true
-    )
-    .AddEntityFrameworkStores<MyLibraryContext>();
+    options => options.SignIn.RequireConfirmedAccount = true
+)
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<MyLibraryContext>();
 
 builder.Services.AddRazorPages();
 // Add services to the container.
@@ -23,8 +25,9 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    // Uruchomienie inicjalizacji bazy
-    //SeedAuthorData.Initialize(services);
+    // Enable database initialization
+    SeedDatabase databaseSeeder = new SeedDatabase(services);
+    databaseSeeder.Initialize();
 }
 
 // Configure the HTTP request pipeline.

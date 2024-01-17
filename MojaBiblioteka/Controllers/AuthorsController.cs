@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using MojaBiblioteka.Models.Entities.Persons;
 
 namespace MojaBiblioteka.Controllers
 {
+    [Authorize(Roles = "Admin, Employee")]
     public class AuthorsController : Controller
     {
         private readonly MyLibraryContext _context;
@@ -177,15 +179,15 @@ namespace MojaBiblioteka.Controllers
           return (_context.Authors?.Any(e => e.AuthorId == id)).GetValueOrDefault();
         }
 
-        private async void SetAuthorsProperties(Author author)
+        private void SetAuthorsProperties(Author author)
         {
-            var Name = await _context.Names
+            var Name = _context.Names
                 .Where(n => n.FirstName == author.FirstName.FirstName)
-                .SingleOrDefaultAsync();
+                .SingleOrDefault();
 
-            var Surname = await _context.LastNames
+            var Surname = _context.LastNames
                 .Where(l => l.Surname == author.Surname.Surname)
-                .SingleOrDefaultAsync();
+                .SingleOrDefault();
 
             if (Name != null)
                 author.FirstName = Name;

@@ -25,7 +25,7 @@ namespace MojaBiblioteka.Data
         public DbSet<BookAuthor> BooksAuthors { get; set; } = default!;
         public DbSet<Name> Names { get; set; } = default!;
         public DbSet<LastName> LastNames { get; set; } = default!;
-        public DbSet<RentalTransaction> RentalTransactionList { get; set; }
+        public DbSet<RentalTransaction> RentalTransactionList { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,8 +34,6 @@ namespace MojaBiblioteka.Data
                 .HasKey(c => new { c.BookIsbn, c.CategoryId });
             modelBuilder.Entity<BookAuthor>()
                 .HasKey(b => new { b.BookIsbn, b.AuthorId });
-            modelBuilder.Entity<RentalTransaction>()
-                .HasKey(rt => new { rt.BookIsbn, rt.UserId });
         }
     }
 }

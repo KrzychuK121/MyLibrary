@@ -1,14 +1,27 @@
 ﻿@using MojaBiblioteka.Models.Entities.Book;
+@using MojaBiblioteka.Models.ViewModels.Messages;
 @model IEnumerable<Book>
 
 @{
     ViewData["Title"] = "Spis książek";
+    Message mess = null;
+    if (ViewData["message"] != null && !string.IsNullOrWhiteSpace((string)ViewData["message"]))
+    {
+        mess = new Message { MessageText = (string)ViewData["message"], Type = (int) ViewData["type"] };
+    }
 }
 
 <h1>Spis</h1>
-
+@await Html.PartialAsync("../Connector/_AlertMessage", mess)
 <p>
-    <a asp-action="Create">Dodaj książkę</a>
+    @if (
+        Context.User.IsInRole("Admin") ||
+        Context.User.IsInRole("Employee")
+    )
+    {
+        <a asp-action="Create">Dodaj książkę</a>
+    }
+    
 </p>
 <table class="table">
     <thead>
@@ -89,12 +102,35 @@
                 @Html.DisplayFor(modelItem => item.ReleaseDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Amount)
+                @Html.Raw(item.Amount == 0 ? "Brak" : item.Amount)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Isbn">Edytuj</a> |
-                <a asp-action="Details" asp-route-id="@item.Isbn">Opis</a> |
-                <a asp-action="Delete" asp-route-id="@item.Isbn">Usuń</a>
+                @if (Context.User.IsInRole("Client"))
+                {
+                    <form 
+                        method="POST"
+                        asp-controller="RentalTransactions"
+                        asp-action="Create"
+                        asp-route-bookIsbn="@item.Isbn"
+                    >
+                        <input 
+                            type="submit" 
+                            value="Wypożycz" 
+                            class="btn btn-primary"
+                            @Html.Raw(item.Amount == 0 ? "disabled" : "")
+                        />
+                    </form>
+                }
+                @if(
+                    Context.User.IsInRole("Admin") ||
+                    Context.User.IsInRole("Employee")
+                )                
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Isbn">Edytuj</a> @Html.Raw("|");
+                    <a asp-action="Details" asp-route-id="@item.Isbn"> Opis </a> @Html.Raw("|");
+                    <a asp-action="Delete" asp-route-id="@item.Isbn"> Usuń </a>
+                }
+                
             </td>
         </tr>
 }

@@ -1,0 +1,115 @@
+﻿@using MojaBiblioteka.Models.ViewModels.Connector;
+@model MojaBiblioteka.Models.Entities.Connector.RentalTransaction
+
+@{
+    ViewData["Title"] = "Usuń transakcję wypożyczenia";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isAdminOrEmployee = User.IsInRole("Admin") || User.IsInRole("Employee");
+    var counterAuthors = 1;
+}
+
+<h1>Usuwanie</h1>
+
+<h3>Jesteś pewny, że chcesz usunąć?</h3>
+<div>
+    <h4>Transakcja wypożyczenia</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Book)
+        </dt>
+        <dd class="col-sm-10">
+            <b>@Html.DisplayNameFor(model => model.Book.Isbn):</b> @Html.DisplayFor(model => model.Book.Isbn)<br />
+            <b>@Html.DisplayNameFor(model => model.Book.Title):</b> @Html.DisplayFor(model => model.Book.Title)<br />
+            <b>@Html.DisplayNameFor(model => model.Book.BookAuthor):</b>
+            @if (Model.Book.BookAuthor is null || Model.Book.BookAuthor.Count() == 0)
+            {
+                @:Brak
+            }
+
+            @foreach (var bAuthor in Model.Book.BookAuthor)
+            {
+
+                string? dateToDisplay = bAuthor.Author.DateOfBirth is null ?
+                "" :
+                ", " + bAuthor.Author.DateOfBirth.ToString().Split(' ')[0];
+                <span class="text-capitalize">
+                    @Html.Encode(
+                bAuthor.Author.FirstName.FirstName + " " +
+                bAuthor.Author.Surname.Surname +
+                dateToDisplay
+                )
+                </span>
+
+                @Html.Raw(counterAuthors++ == Model.Book.BookAuthor.Count() ? "" : ", ")
+            }
+            <br />
+            <b>@Html.DisplayNameFor(model => model.Book.Publisher):</b> @Html.DisplayFor(model => model.Book.Publisher.Name)<br />
+            <b>@Html.DisplayNameFor(model => model.Book.BookCategory):</b>
+            @{
+                // which element in loop
+                var counterCategories = 1;
+
+                if (Model.Book.BookCategory is null || Model.Book.BookCategory.Count() == 0)
+                    @Html.Raw("Brak")
+                ;
+
+                foreach (var bCategory in Model.Book.BookCategory)
+                {
+                    @bCategory.Category.Name @(counterCategories == Model.Book.BookCategory.Count() ? "" : ", ")
+                    ;
+                    counterCategories++;
+                }
+            }
+            <br />
+            <b>@Html.DisplayNameFor(model => model.Book.ReleaseDate):</b> @Html.DisplayFor(model => model.Book.ReleaseDate)<br />
+            <b>@Html.DisplayNameFor(model => model.Book.Amount):</b> @Html.DisplayFor(model => model.Book.Amount)<br />
+            <!--Koniec książki-->
+        </dd>
+        @if (isAdminOrEmployee)
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.User)
+            </dt>
+            <dd class="col-sm-10">
+                <p>
+                    <b>@Html.DisplayNameFor(model => model.UserId):</b> @Model.UserId <br />
+                    <b>Imię i nazwisko:</b> <span class="text-capitalize">@Model.User.FirstName.FirstName @Model.User.Surname.Surname</span><br />
+                    <b>Kontakt:</b><br />
+                    <b>Nr. tel:</b> @Html.Raw(Model.User.PhoneNumber == null ? "brak" : Model.User.PhoneNumber);<br />
+                    <b>@Html.DisplayNameFor(model => model.User.Email):</b> @Model.User.Email<br />
+                </p>
+            </dd>
+        }
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.RentalDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.RentalDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DueDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DueDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ProlongTermCounter)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ProlongTermCounter)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+        <dd class="col-sm-10">
+            @RentalTransactionsVM.GetStatusText(Model.Status)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete" asp-route-userId="@ViewData["userId"]">
+        <input type="hidden" asp-for="RentalTransactionId" />
+        <input type="submit" value="Usuń" class="btn btn-danger" /> |
+        @await Html.PartialAsync("_GoBackLink", ViewData["userId"])
+    </form>
+</div>

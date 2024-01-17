@@ -1,0 +1,98 @@
+﻿@using MojaBiblioteka.Models.Entities.Connector;
+@using MojaBiblioteka.Models.ViewModels.Connector;
+@model IEnumerable<MojaBiblioteka.Models.Entities.Connector.RentalTransaction>
+
+@{
+    ViewData["Title"] = "Spis wypożyczeń";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isAdminOrEmployee = User.IsInRole("Admin") || User.IsInRole("Employee");
+    string? currUserId = null;
+    var counter = 0;
+}
+
+@section Styles {
+    <link href="/css/RentalTransactionsIndex.css" rel="stylesheet" type="text/css" />
+}
+
+<h1>Spis</h1>
+
+
+@foreach (var item in Model) {
+    
+    @if (currUserId == null || currUserId != item.UserId)
+    {
+        if (currUserId != null)
+        {
+            @:</tbody>
+            @:</table>
+            @:</div>
+           
+        }
+        @:<div class="row">
+            currUserId = item.UserId;
+            <a 
+                class="nav-link text-dark descLink" 
+                asp-controller="RentalTransactions" 
+                asp-action="IndexUser"
+                asp-route-userId="@item.UserId"
+            >
+                <h2>Książki użytkownika <span class="text-capitalize">@item.User.FirstName.FirstName @item.User.Surname.Surname</span></h2>
+            </a>
+            @:<hr>
+            @:<table class="table">
+                @:<thead>
+                    @:<tr>
+                        @:<th>
+                        @Html.DisplayNameFor(model => model.Book)
+                        @:</th>
+                        @:<th>
+                        @Html.DisplayNameFor(model => model.RentalDate)
+                        @:</th>
+                        @:<th>
+                        @Html.DisplayNameFor(model => model.DueDate)
+                        @:</th>
+                        @:<th>
+                        @Html.DisplayNameFor(model => model.ProlongTermCounter)
+                        @:</th>
+                        @:<th>
+                        @Html.DisplayNameFor(model => model.Status)
+                        @:</th>
+                        @:<th></th>
+                    @:</tr>
+                @:</thead>
+                @:<tbody>
+    }
+            <tr>
+                <td>
+                    @Html.Raw(item.Book.Title), @Html.Raw(item.Book.Publisher.Name), @item.Book.ReleaseDate.ToString().Split(' ')[0]
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RentalDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProlongTermCounter)
+                </td>
+                <td>
+                    @Html.Raw(RentalTransactionsVM.GetStatusText(item.Status))
+                </td>
+                <td>
+                    @if (isAdminOrEmployee)
+                    {
+                        @Html.ActionLink("Edytuj", "Edit", new { id = item.RentalTransactionId }) @Html.Raw(" | ")
+                        @Html.ActionLink("Opis", "Details", new { id = item.RentalTransactionId }); @Html.Raw(" | ");
+                        @Html.ActionLink("Usuń", "Delete", new { id = item.RentalTransactionId });
+                    }
+                </td>
+            </tr>   
+}
+@if(currUserId != null)
+{
+                @:</tbody>
+            @:</table>
+        @:</div>
+}
+
+    

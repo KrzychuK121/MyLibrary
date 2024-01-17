@@ -1,0 +1,129 @@
+﻿@using MojaBiblioteka.Models.Entities.Connector;
+@using MojaBiblioteka.Models.ViewModels.Connector;
+@using MojaBiblioteka.Models.ViewModels.Messages;
+@model IEnumerable<MojaBiblioteka.Models.Entities.Connector.RentalTransaction>
+
+@{
+    ViewData["Title"] = "Spis wypożyczeń";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isAdminOrEmployee = User.IsInRole("Admin") || User.IsInRole("Employee");
+    Message mess = null;
+    if (ViewData["message"] != null && !string.IsNullOrWhiteSpace((string)ViewData["message"]))
+    {
+        mess = new Message { MessageText = (string)ViewData["message"], Type = (int)ViewData["type"] };
+    }
+}
+
+<h1>Spis</h1>
+
+@if (isAdminOrEmployee)
+{
+    <div>
+        <a asp-action="Index">Powrót do listy</a>
+    </div>
+}
+
+
+@if(isAdminOrEmployee && Model.Any()){
+    var user = Model.First().User;
+    <h2>Książki użytkownika <span class="text-capitalize">@user.FirstName.FirstName @user.Surname.Surname</span></h2>
+}
+@await Html.PartialAsync("../Connector/_AlertMessage", mess)
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Book)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RentalDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProlongTermCounter)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.Raw(item.Book.Title), @Html.Raw(item.Book.Publisher.Name), @item.Book.ReleaseDate.ToString().Split(' ')[0]
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RentalDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DueDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProlongTermCounter)
+            </td>
+            <td>
+                @Html.Raw(RentalTransactionsVM.GetStatusText(item.Status))
+            </td>
+            <td>
+                @{
+                    if(User.IsInRole("Client"))
+                    {
+                        if
+                        (
+                            item.Status == (int) BookStatus.Ordered ||
+                            item.Status == (int) BookStatus.ReadyToPickUp
+                        )
+                        {
+                            <form 
+                                method="POST"
+                                asp-action="Cancel"
+                                asp-route-userId="@item.UserId"
+                                asp-route-id="@item.RentalTransactionId"
+                            >
+                                <input class="btn btn-danger" type="submit" value="Anuluj" />
+                            </form>
+                        }
+
+                        if(item.Status == (int) BookStatus.PickedUp)
+                        {
+                            <form
+                                method="POST"
+                                asp-action="ProlongTerm"
+                                asp-route-id="@item.RentalTransactionId"
+                            >
+                                <input 
+                                    class="btn btn-success" 
+                                    type="submit" 
+                                    value="Przedłuż" 
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Przedłuż wypożyczenie o 1 miesiąc."
+                                />
+                            </form>
+                        }
+                            
+                    }
+
+                    if (isAdminOrEmployee)
+                    {
+                        @Html.ActionLink("Edytuj", "Edit", new { id = item.RentalTransactionId, userId = item.UserId }) @Html.Raw(" | ")
+                    }
+                        
+                    @Html.ActionLink("Opis", "Details", new { id = item.RentalTransactionId, userId = item.UserId }); 
+
+                    if (isAdminOrEmployee)
+                    {
+                        @Html.Raw(" | "); @Html.ActionLink("Usuń", "Delete", new { id = item.RentalTransactionId, userId = item.UserId });
+                    }
+                        
+                        
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
