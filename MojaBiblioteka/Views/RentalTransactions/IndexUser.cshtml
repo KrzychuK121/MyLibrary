@@ -54,7 +54,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.Encode(item.Book.Title + ", " + item.Book.Publisher.Name + ", " + item.Book.ReleaseDate.ToString().Split(' ')[0])
+                @Html.Raw(item.Book.Title), @Html.Raw(item.Book.Publisher.Name), @item.Book.ReleaseDate.ToString().Split(' ')[0]
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.RentalDate)
