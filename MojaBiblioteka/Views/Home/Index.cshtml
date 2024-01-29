@@ -1,7 +1,21 @@
-﻿@{
+﻿@using MojaBiblioteka.Models.ViewModels.Messages
+@{
     ViewData["Title"] = "Strona główna";
-}
+    Message messSoonExpire = null;
+    Message messExpired = null;
 
+    if (ViewData["messageSoonExpire"] != null && !string.IsNullOrWhiteSpace((string)ViewData["messageSoonExpire"]))
+    {
+        messSoonExpire = new Message { MessageText = (string)ViewData["messageSoonExpire"], Type = (int)ViewData["typeSoonExpire"] };
+    }
+
+    if (ViewData["messageExpired"] != null && !string.IsNullOrWhiteSpace((string)ViewData["messageExpired"]))
+    {
+        messExpired = new Message { MessageText = (string)ViewData["messageExpired"], Type = (int)ViewData["typeExpired"] };
+    }
+}
+@await Html.PartialAsync("../Connector/_AlertMessage", messSoonExpire)
+@await Html.PartialAsync("../Connector/_AlertMessage", messExpired)
 <div class="text-center">
     <h1 class="display-4">Witaj w Twojej internetowej Bibliotece</h1>
     <div class="row my-4">
