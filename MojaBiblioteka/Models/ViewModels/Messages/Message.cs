@@ -10,6 +10,7 @@
     {
         Information,
         Error,
-        Success
+        Success,
+        Warning
     }
 }
