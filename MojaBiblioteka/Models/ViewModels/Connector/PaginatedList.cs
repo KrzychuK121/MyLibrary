@@ -19,6 +19,10 @@ namespace MojaBiblioteka.Models.ViewModels.Connector
 
         public bool HasNextPage => PageIndex < TotalPages;
 
+        public int GetPreviousPageIndex() => HasPreviousPage ? --PageIndex : PageIndex;
+
+        public int GetNextPageIndex() => HasNextPage ? ++PageIndex : PageIndex;
+
         public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize)
         {
             var count = await source.CountAsync();

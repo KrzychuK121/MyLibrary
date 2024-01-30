@@ -66,8 +66,12 @@ namespace MojaBiblioteka.Controllers
             return View(rentalTransactionList);
         }
 
-        // GET: RentalTransactions/Index?userId
-        public async Task<IActionResult> IndexUser(string userId)
+        // GET: RentalTransactions/IndexUser?userId
+        public async Task<IActionResult> IndexUser
+        (
+            string userId,
+            int? pageNumber
+        )
         {
             if (TempData["message"] != null)
                 ViewData["message"] = TempData["message"];
@@ -100,10 +104,20 @@ namespace MojaBiblioteka.Controllers
                     );
             }
 
-            var rentalTransactionList = await rentalTransactionLINQ
-                .ToListAsync();
+            /*var rentalTransactionList = rentalTransactionLINQ
+                .ToListAsync();*/
 
-            return View(rentalTransactionList);
+            int pageSize = User.IsInRole("Client") ? 2 : await rentalTransactionLINQ.CountAsync();
+
+            return View
+            (
+                await PaginatedList<RentalTransaction>.CreateAsync
+                (
+                    rentalTransactionLINQ.AsNoTracking(),
+                    pageNumber ?? 1,
+                    pageSize
+                )
+            );
         }
 
         // GET: RentalTransactions/Details/5

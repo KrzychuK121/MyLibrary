@@ -1,7 +1,8 @@
 ﻿@using MojaBiblioteka.Models.Entities.Connector;
 @using MojaBiblioteka.Models.ViewModels.Connector;
 @using MojaBiblioteka.Models.ViewModels.Messages;
-@model IEnumerable<MojaBiblioteka.Models.Entities.Connector.RentalTransaction>
+@using System.Security.Claims
+@model PaginatedList<MojaBiblioteka.Models.Entities.Connector.RentalTransaction>
 
 @{
     ViewData["Title"] = "Spis wypożyczeń";
@@ -33,19 +34,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Book)
+                @Html.DisplayNameFor(model => model.First().Book)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RentalDate)
+                @Html.DisplayNameFor(model => model.First().RentalDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DueDate)
+                @Html.DisplayNameFor(model => model.First().DueDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ProlongTermCounter)
+                @Html.DisplayNameFor(model => model.First().ProlongTermCounter)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                @Html.DisplayNameFor(model => model.First().Status)
             </th>
             <th></th>
         </tr>
@@ -127,3 +128,28 @@
 }
     </tbody>
 </table>
+
+@{
+    if (User.IsInRole("Client"))
+    {
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+        <a 
+            asp-action="IndexUser"
+            asp-route-pageNumber="@(Model.GetPreviousPageIndex())"
+            asp-route-userId="@User.FindFirstValue(ClaimTypes.NameIdentifier)"
+            class="btn btn-default @prevDisabled"
+        >
+            Poprzednia
+        </a>
+
+        <a 
+            asp-action="IndexUser"
+            asp-route-pageNumber="@(Model.GetNextPageIndex())"
+            asp-route-userId="@User.FindFirstValue(ClaimTypes.NameIdentifier)"
+            class="btn btn-default @nextDisabled"
+        >
+            Następna
+        </a>
+    }
+}
